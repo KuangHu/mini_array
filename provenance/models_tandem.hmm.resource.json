@@ -1,0 +1,18 @@
+{
+  "resource_file": "models_tandem.hmm",
+  "sha256": "818363ec57f0b3b664ce4267ff15314090046a8b17fd709ac7b5926a15a67336",
+  "size_bytes": 13723938,
+  "n_profiles": 79,
+  "source_repo": "https://github.com/BackofenLab/CRISPRloci",
+  "source_commit": "d25287b4f8a1c7dc1f885aeda25e61f85b1aecdc",
+  "source_path": "CRISPRidentify/tools/hmm_search/models_tandem.hmm",
+  "verified_blast_db_identity": {
+    "Verified_repeats_dataset1.fa.md5": "5d2677c20ebdee53f7945eefb5001738",
+    "Verified_repeats_dataset2.fa.md5": "e936ddec90de10911a14fc8e53c58ec2",
+    "note": "md5 identical between CRISPRloci and our locked CRISPRidentify commits"
+  },
+  "notes": [
+    "79 HMM profiles — mix of NCBI CDD (cd*) and COG models for proteins commonly found with tandem repeats.",
+    "Resource restored from CRISPRloci; not substituted from Pfam or other sources."
+  ]
+}

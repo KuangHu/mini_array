@@ -1,0 +1,25 @@
+{
+  "assumed_full_db_n_genomes": 107235,
+  "cpu_hours_total_at_mean": {
+    "identify": 15520.5,
+    "cctyper": 3012.1,
+    "combined": 18532.6
+  },
+  "wall_hours_total_at_30_concurrent": {
+    "note": "Assumes 30 jobs run concurrently throughout. Each job uses 4 CPUs. identify + cctyper can overlap because they use different envs; the longer tool dominates wall time.",
+    "identify": 129.3,
+    "cctyper": 25.1,
+    "overlapping_pipelines": 129.3
+  },
+  "disk_bytes_at_full_db": {
+    "fixed_overhead": 6491714527,
+    "variable_per_genome_times_fullN": 358949238237.0,
+    "total_steady_state": 365440952764.0,
+    "note": "Peak temporary during run depends on concurrent-jobs setting; work_patched sampled at steady state (post-cleanup) at 141533175 B for 1000-genome batch \u2014 not representative of in-flight peak."
+  },
+  "sources_of_discrepancy_vs_prior_report": [
+    "Prior report wrote '476 s \u00d7 4 cores = 0.53 cpu-h' \u2014 incorrect units; 476 cpu-sec = 0.132 cpu-h.",
+    "Prior report used medians for extrapolation, which underestimates because of a long tail (identify max was 1209 s vs median 96 s).",
+    "Means give a slightly larger total; both are reported here."
+  ]
+}

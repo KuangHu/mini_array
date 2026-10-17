@@ -1,0 +1,27 @@
+{
+  "schema_version": "1",
+  "generated_at": "2026-10-15T20:28:15-07:00",
+  "crispridentify_upstream_commit": "474896ce3c9b89a609e69ac9d2fcdf78e4e2aad4",
+  "crispricloci_resource_commit": "d25287b4f8a1c7dc1f885aeda25e61f85b1aecdc",
+  "resources": {
+    "models_tandem.hmm": {
+      "sha256": "818363ec57f0b3b664ce4267ff15314090046a8b17fd709ac7b5926a15a67336",
+      "size": 13723938,
+      "source": "CRISPRloci@d25287b4"
+    },
+    "Verified_repeats_dataset1.fa.md5": "5d2677c20ebdee53f7945eefb5001738",
+    "Verified_repeats_dataset2.fa.md5": "e936ddec90de10911a14fc8e53c58ec2"
+  },
+  "patches": {
+    "components_evaluation.py.patch": "655f8999bbd4bae1d569f2d295c976313cc02c24f4353622eab703b56c34c246",
+    "CRISPRidentify.py.patch": "bb9904e78d90ebf016b502620a67a096ca8a9970b57584f33e250b5299e4afb7",
+    "_resources.py.new": "b7061a66efb5e1e5a16fe581b49ff18b4722d01e15769ca3aa77942ac2938b78"
+  },
+  "classifier_models": {
+    "trained_models_dir": "software/CRISPRidentify.patched/trained_models",
+    "list_hash": "b693f9d2f7829a152df9ea9c4fbbe46ab631e8242b9c1c5d8a134066d7ad4d18"
+  },
+  "env_identify_explicit": "8094fefa714b45a4adaeec6463a144ebe7c7eb8702e7e9377b3df3800652ef13",
+  "env_driver_explicit": "62167c08e87e8765f03b64311219b29606db8d425bca0568f16e074dd9bb18cb",
+  "cctyper_output_reused_from_run": "raw/cctyper (input + cctyper version unchanged)"
+}

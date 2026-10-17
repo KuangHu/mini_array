@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+*.log
+# Big data not shipped in the repo:
+input/staged/
+raw/
+raw_patched/
+work/
+work_patched/
+envs/
+software/
+logs/
+.conda_cache/
+# Scratch
+*.swp
+.DS_Store

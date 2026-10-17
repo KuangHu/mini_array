@@ -1,0 +1,56 @@
+schema_version: 1
+
+# Resolved relative to project_root below. All code lives under
+# /home/kuangh/tools/CRISPR_array_related; all heavy data lives under
+# /groups/rubin/projects/kuang/out/CRISPR_array_related.
+project_root: /groups/rubin/projects/kuang/out/CRISPR_array_related
+code_root: /home/kuangh/tools/CRISPR_array_related
+
+manifest: input/genomes.tsv
+output_dir: results/step1
+seed: 42
+
+execution:
+  max_genomes: 100
+  allow_full_run: false
+  workers: 2
+  threads_per_job: 4
+  resume: true
+
+identify:
+  model: ALL
+  min_repeats: 3
+  min_len_rep: 21
+  max_len_rep: 55
+  min_len_spacer: 18
+  max_len_spacer: 78
+  fast_run: false
+  strand: true
+  cas: false
+  is_element: false
+
+seed_qc:
+  # Frozen 2026-10-15: 0.75 is the primary standard; 0.90 is the strict
+  # comparator — override at export time with `--min-score 0.90`.
+  # (See provenance/LOCKED.md for the full rationale.)
+  min_score: 0.75
+  min_full_repeats: 3
+  min_unique_spacers: 2
+  context_bp: 100
+  max_ambiguous_bases_in_context: 0
+  min_copy_normalized_edit_similarity: 0.90
+  min_copy_length_ratio: 0.90
+  require_cas: false
+
+families:
+  method: deterministic_greedy_centroid
+  min_normalized_edit_similarity: 0.90
+  min_length_ratio: 0.90
+  compare_both_strands: true
+  export_all_nr100_queries: true
+
+cas_annotation:
+  enabled: true
+  max_local_gap_bp: 10000
+  cross_contig_assignment: false
+  repeat_typer_optional: false

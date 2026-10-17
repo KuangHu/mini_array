@@ -1,0 +1,77 @@
+usage: CRISPRidentify.py [-h] [--input_folder INPUT_FOLDER] [--file FILE]
+                         [--input_folder_multifasta INPUT_FOLDER_MULTIFASTA]
+                         [--model MODEL] [--additional_model ADDITIONAL_MODEL]
+                         [--result_folder RESULT_FOLDER]
+                         [--pickle_report PICKLE_REPORT]
+                         [--json_report JSON_REPORT]
+                         [--fasta_report FASTA_REPORT] [--strand STRAND]
+                         [--cas CAS] [--is_element IS_ELEMENT]
+                         [--parallel PARALLEL] [--cpu CPU]
+                         [--fast_run FAST_RUN] [--degenerated DEGENERATED]
+                         [--min_len_rep MIN_LEN_REP]
+                         [--max_len_rep MAX_LEN_REP]
+                         [--min_len_spacer MIN_LEN_SPACER]
+                         [--max_len_spacer MAX_LEN_SPACER]
+                         [--min_repeats MIN_REPEATS]
+                         [--enhancement_max_min ENHANCEMENT_MAX_MIN]
+                         [--enhancement_start_end ENHANCEMENT_START_END]
+                         [--max_identical_spacers MAX_IDENTICAL_SPACERS]
+                         [--max_identical_cluster_spacers MAX_IDENTICAL_CLUSTER_SPACERS]
+                         [--margin_degenerated MARGIN_DEGENERATED]
+                         [--max_edit_distance_enhanced MAX_EDIT_DISTANCE_ENHANCED]
+
+Run Identifier
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --input_folder INPUT_FOLDER
+                        input folder (default: None)
+  --file FILE           input file (default: None)
+  --input_folder_multifasta INPUT_FOLDER_MULTIFASTA
+                        input folder of multifasta (default: None)
+  --model MODEL         model_to_use (default: ALL)
+  --additional_model ADDITIONAL_MODEL
+                        model_to_use (default: None)
+  --result_folder RESULT_FOLDER
+                        folder with the result (default: Results)
+  --pickle_report PICKLE_REPORT
+                        pickled report file (default: None)
+  --json_report JSON_REPORT
+                        json report file (default: None)
+  --fasta_report FASTA_REPORT
+                        fasta report file (default: False)
+  --strand STRAND       CRISPR array orientation prediction (default: True)
+  --cas CAS             cas genes computation (default: False)
+  --is_element IS_ELEMENT
+                        is element computation (default: True)
+  --parallel PARALLEL   parallel computations (default: True)
+  --cpu CPU             parallel computations (default: ALL)
+  --fast_run FAST_RUN   fast run option (default: False)
+  --degenerated DEGENERATED
+                        degenerated_repeat_computation (default: True)
+  --min_len_rep MIN_LEN_REP
+                        min avg. length of the repeats (default: 21)
+  --max_len_rep MAX_LEN_REP
+                        max avg. length of the repeats (default: 55)
+  --min_len_spacer MIN_LEN_SPACER
+                        min avg. length of spacers (default: 18)
+  --max_len_spacer MAX_LEN_SPACER
+                        max avg. length of spacers (default: 78)
+  --min_repeats MIN_REPEATS
+                        min number of repeats (default: 3)
+  --enhancement_max_min ENHANCEMENT_MAX_MIN
+                        enhancement with filter (default: True)
+  --enhancement_start_end ENHANCEMENT_START_END
+                        enhancement with start end omitting (default: True)
+  --max_identical_spacers MAX_IDENTICAL_SPACERS
+                        maximum number of identical spacers in the array
+                        (default: 4)
+  --max_identical_cluster_spacers MAX_IDENTICAL_CLUSTER_SPACERS
+                        maximum number of consecutive identical spacers in the
+                        array (default: 3)
+  --margin_degenerated MARGIN_DEGENERATED
+                        maximum length of the spacer margin for the
+                        degenerated search (default: 30)
+  --max_edit_distance_enhanced MAX_EDIT_DISTANCE_ENHANCED
+                        maximum edit distance for the evaluated array
+                        enhancement (default: 6)

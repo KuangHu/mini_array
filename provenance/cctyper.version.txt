@@ -1,0 +1,3 @@
+usage: cctyper [-h] [-t THREADS] [--prodigal {single,meta}] [--gff GFF]
+               [--prot PROT] [--circular] [--keep_tmp]
+               [--log_lvl {DEBUG,INFO,WARNING,ERROR}] [--redo_typing]

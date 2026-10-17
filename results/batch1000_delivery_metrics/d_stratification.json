@@ -1,0 +1,225 @@
+{
+  "by_source_type": [
+    {
+      "key": "MAG",
+      "n_genomes_in_manifest": 933,
+      "candidates_total": 64681,
+      "bona_fide_coord_pass": 570,
+      "hq_arrays": 165
+    },
+    {
+      "key": "isolate",
+      "n_genomes_in_manifest": 67,
+      "candidates_total": 4597,
+      "bona_fide_coord_pass": 82,
+      "hq_arrays": 74
+    }
+  ],
+  "by_phylum": [
+    {
+      "key": "p__4484-113",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 571,
+      "bona_fide_coord_pass": 1,
+      "hq_arrays": 1
+    },
+    {
+      "key": "p__AUK180",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 601,
+      "bona_fide_coord_pass": 1,
+      "hq_arrays": 1
+    },
+    {
+      "key": "p__Acidobacteriota",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 402,
+      "bona_fide_coord_pass": 2,
+      "hq_arrays": 1
+    },
+    {
+      "key": "p__Actinomycetota",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 1146,
+      "bona_fide_coord_pass": 2,
+      "hq_arrays": 2
+    },
+    {
+      "key": "p__Aerophobota",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 280,
+      "bona_fide_coord_pass": 2,
+      "hq_arrays": 0
+    },
+    {
+      "key": "p__Aquificota",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 86,
+      "bona_fide_coord_pass": 4,
+      "hq_arrays": 1
+    },
+    {
+      "key": "p__Armatimonadota",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 453,
+      "bona_fide_coord_pass": 5,
+      "hq_arrays": 1
+    },
+    {
+      "key": "p__Atribacterota",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 230,
+      "bona_fide_coord_pass": 1,
+      "hq_arrays": 0
+    },
+    {
+      "key": "p__BMS3Abin14",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 599,
+      "bona_fide_coord_pass": 0,
+      "hq_arrays": 0
+    },
+    {
+      "key": "p__Bacillota",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 203,
+      "bona_fide_coord_pass": 2,
+      "hq_arrays": 2
+    },
+    {
+      "key": "p__Bacillota_A",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 660,
+      "bona_fide_coord_pass": 2,
+      "hq_arrays": 2
+    },
+    {
+      "key": "p__Bacillota_B",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 493,
+      "bona_fide_coord_pass": 16,
+      "hq_arrays": 15
+    },
+    {
+      "key": "p__Bacillota_C",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 568,
+      "bona_fide_coord_pass": 4,
+      "hq_arrays": 3
+    },
+    {
+      "key": "p__Bacillota_D",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 312,
+      "bona_fide_coord_pass": 6,
+      "hq_arrays": 2
+    },
+    {
+      "key": "p__Bacillota_E",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 250,
+      "bona_fide_coord_pass": 4,
+      "hq_arrays": 2
+    },
+    {
+      "key": "p__Bacillota_F",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 205,
+      "bona_fide_coord_pass": 8,
+      "hq_arrays": 8
+    },
+    {
+      "key": "p__Bacillota_G",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 127,
+      "bona_fide_coord_pass": 7,
+      "hq_arrays": 1
+    },
+    {
+      "key": "p__Bacillota_H",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 140,
+      "bona_fide_coord_pass": 5,
+      "hq_arrays": 3
+    },
+    {
+      "key": "p__Bacillota_I",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 84,
+      "bona_fide_coord_pass": 0,
+      "hq_arrays": 0
+    },
+    {
+      "key": "p__Bacteroidota",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 516,
+      "bona_fide_coord_pass": 0,
+      "hq_arrays": 0
+    },
+    {
+      "key": "p__Bdellovibrionota",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 219,
+      "bona_fide_coord_pass": 0,
+      "hq_arrays": 0
+    },
+    {
+      "key": "p__Bipolaricaulota",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 102,
+      "bona_fide_coord_pass": 2,
+      "hq_arrays": 0
+    },
+    {
+      "key": "p__CAIJMQ01",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 131,
+      "bona_fide_coord_pass": 0,
+      "hq_arrays": 0
+    },
+    {
+      "key": "p__CG03",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 200,
+      "bona_fide_coord_pass": 3,
+      "hq_arrays": 1
+    },
+    {
+      "key": "p__CLD3",
+      "n_genomes_in_manifest": 7,
+      "candidates_total": 276,
+      "bona_fide_coord_pass": 8,
+      "hq_arrays": 1
+    }
+  ],
+  "by_contig_count": [
+    {
+      "key": "101-500 contigs",
+      "n_genomes_in_manifest": 567,
+      "candidates_total": 37925,
+      "bona_fide_coord_pass": 337,
+      "hq_arrays": 88
+    },
+    {
+      "key": "11-100 contigs",
+      "n_genomes_in_manifest": 285,
+      "candidates_total": 17053,
+      "bona_fide_coord_pass": 203,
+      "hq_arrays": 82
+    },
+    {
+      "key": ">500 contigs",
+      "n_genomes_in_manifest": 85,
+      "candidates_total": 8299,
+      "bona_fide_coord_pass": 48,
+      "hq_arrays": 12
+    },
+    {
+      "key": "1-10 contigs",
+      "n_genomes_in_manifest": 63,
+      "candidates_total": 6001,
+      "bona_fide_coord_pass": 64,
+      "hq_arrays": 57
+    }
+  ]
+}

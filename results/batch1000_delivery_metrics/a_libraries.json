@@ -1,0 +1,22 @@
+{
+  "primary_0.75": {
+    "candidates_total": 69278,
+    "bona_fide_coord_pass": 652,
+    "hq_arrays": 239,
+    "reserve_arrays": 1318,
+    "context_only_arrays": 67621,
+    "invalid_arrays": 100,
+    "nr100_repeats_hq": 213,
+    "families_hq": 155
+  },
+  "strict_0.90": {
+    "candidates_total": 69278,
+    "bona_fide_coord_pass": 652,
+    "hq_arrays": 75,
+    "reserve_arrays": 1482,
+    "context_only_arrays": 67621,
+    "invalid_arrays": 100,
+    "nr100_repeats_hq": 65,
+    "families_hq": 39
+  }
+}

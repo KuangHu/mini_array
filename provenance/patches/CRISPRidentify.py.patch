@@ -1,0 +1,22 @@
+--- /groups/rubin/projects/kuang/out/CRISPR_array_related/software/CRISPRidentify/CRISPRidentify.py	2026-10-13 16:14:51.420857529 -0700
++++ /groups/rubin/projects/kuang/out/CRISPR_array_related/software/CRISPRidentify.patched/CRISPRidentify.py	2026-10-15 19:52:04.401886322 -0700
+@@ -18,10 +18,19 @@
+ from components.components_output_maker import CompleteSpacerCSVMaker
+ from components.components_helpers import multiline_fasta_check, multiline_fasta_handle, multiline_fasta_handle_python
+ from components.components_helpers import folder_of_multifasta_handle
++from components._resources import preflight as _patched_preflight
+ 
+ warnings.filterwarnings("ignore")
+ warnings.simplefilter(action='ignore', category=FutureWarning)
+ 
++# step1 patch: validate BLAST DBs / HMM / external executables before any work
++# so missing resources become loud errors instead of silent zero-valued features.
++_patched_resource_info = _patched_preflight()
++print("[patched] feature-extraction resources OK:")
++for category in ("resources", "executables"):
++    for name, path in _patched_resource_info[category].items():
++        print(f"  {category}: {name} → {path}")
++
+ FLAG_DEVELOPER_MODE = False
+ 
+ parser = argparse.ArgumentParser(description='Run Identifier')

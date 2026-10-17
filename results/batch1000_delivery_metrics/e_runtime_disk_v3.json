@@ -1,0 +1,14 @@
+{
+  "identify_mean_wall_s": 130.26,
+  "cctyper_mean_wall_s": 25.28,
+  "wall_hours_at_30_concurrent": {
+    "sequential_single_pool": 154.4,
+    "two_parallel_pools_30_each": 129.3,
+    "single_pool_split_15_15": 308.9
+  },
+  "totalcpu_capture_rate": {
+    "identify": "0/1126",
+    "cctyper": "0/993"
+  },
+  "note": "CPUTimeRAW = AllocCPUS \u00d7 Elapsed = *allocated* CPU-sec. TotalCPU = *actually consumed* CPU-sec. Only the former is non-zero in this cluster's sacct output; the real CPU footprint is almost certainly smaller than the extrapolation."
+}

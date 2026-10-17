@@ -1,0 +1,127 @@
+--- /groups/rubin/projects/kuang/out/CRISPR_array_related/software/CRISPRidentify/components/components_evaluation.py	2026-10-13 16:14:56.580910252 -0700
++++ /groups/rubin/projects/kuang/out/CRISPR_array_related/software/CRISPRidentify.patched/components/components_evaluation.py	2026-10-15 19:51:51.728577987 -0700
+@@ -9,6 +9,13 @@
+ from components.components_eden import fold as seq2graph
+ from components.components_eden import kernel_matrix
+ 
++# -- step1 patch: absolute-path resource resolution + checked subprocess calls --
++from components._resources import (
++    blast_db as _patched_blast_db,
++    hmm_model as _patched_hmm_model,
++    run_subprocess as _patched_run,
++)
++
+ 
+ #        BULK FEATURE EXTRACTION
+ #########################################################
+@@ -298,12 +305,17 @@
+             self.dict_final_orf_result[key] = list_scores
+ 
+     def _run_hmm_search(self):
+-        #cmd = 'tools/hmm_search/hmmsearch --tblout result_hmm.out tools/hmm_search/models_tandem.hmm protein_results.fa'
+-
+-        no_binary_cmd = "hmmsearch --tblout result_hmm.out tools/hmm_search/models_tandem.hmm protein_results.fa"
+-
+-        process = subprocess.Popen(no_binary_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+-        process.communicate()
++        # step1 patch: absolute path to HMM; checked subprocess call.
++        # Skip gracefully if there are no protein ORFs (empty FASTA from prodigal).
++        if (not os.path.exists("protein_results.fa")
++                or os.stat("protein_results.fa").st_size == 0):
++            # legitimate "no query sequences" case; downstream treats as no-hits
++            open("result_hmm.out", "w").close()
++            return
++        hmm_path = _patched_hmm_model()
++        cmd = (f"hmmsearch --tblout result_hmm.out "
++               f"{hmm_path} protein_results.fa")
++        _patched_run(cmd, label="bulk_hmm_search")
+ 
+     def _extract_best_score_from_hmm(self):
+         self.dict_hmm_results = {}
+@@ -395,31 +407,16 @@
+                 f.write(f">{index}\n")
+                 f.write(f"{consensus_seq}\n")
+ 
+-        db_file = 'Verified_repeats_dataset1.fa'
+-
+-        #cmd = 'tools/blasting/blastn -query file_with_all_consensus.fa'
+-        #cmd += ' -db tools/blasting/'
+-        #cmd += db_file
+-        #cmd += ' -word_size 6'
+-        #cmd += ' -outfmt 6 -out output_fasta_bulk_extraction1'
+-
+-        no_binary_cmd = f"blastn -query file_with_all_consensus.fa -db tools/blasting/{db_file} -word_size 6  -outfmt 6 -out output_fasta_bulk_extraction1"
+-
+-        process = subprocess.Popen(no_binary_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+-        process.communicate()
+-
+-        db_file = 'Verified_repeats_dataset2.fa'
+-
+-        #cmd = 'tools/blasting/blastn -query file_with_all_consensus.fa'
+-        #cmd += ' -db tools/blasting/'
+-        #cmd += db_file
+-        #cmd += ' -word_size 6'
+-        #cmd += ' -outfmt 6 -out output_fasta_bulk_extraction2'
+-
+-        no_binary_cmd = f"blastn -query file_with_all_consensus.fa -db tools/blasting/{db_file} -word_size 6  -outfmt 6 -out output_fasta_bulk_extraction2"
+-
+-        process = subprocess.Popen(no_binary_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+-        process.communicate()
++        # step1 patch: absolute DB paths + checked subprocess calls.
++        db1 = _patched_blast_db('Verified_repeats_dataset1.fa')
++        cmd = (f"blastn -query file_with_all_consensus.fa -db {db1} "
++               f"-word_size 6 -outfmt 6 -out output_fasta_bulk_extraction1")
++        _patched_run(cmd, label="bulk_blast_db1")
++
++        db2 = _patched_blast_db('Verified_repeats_dataset2.fa')
++        cmd = (f"blastn -query file_with_all_consensus.fa -db {db2} "
++               f"-word_size 6 -outfmt 6 -out output_fasta_bulk_extraction2")
++        _patched_run(cmd, label="bulk_blast_db2")
+ 
+         with open("output_fasta_bulk_extraction1") as f:
+             lines = f.readlines()
+@@ -869,7 +866,9 @@
+         self._create_crispr_seq()
+         self._create_file()
+         self._call_prodigal()
+-        self._run_hmm_search('tools/hmm_search/models_tandem.hmm')
++        # step1 patch: pass absolute HMM path (upstream also referenced a
++        # relative one that only resolved from the source directory).
++        self._run_hmm_search(str(_patched_hmm_model()))
+         self._get_best_score_from_hmm()
+         self._clean_up()
+ 
+@@ -884,23 +883,19 @@
+             f.write(self.crispr_seq)
+ 
+     def _call_prodigal(self):
+-        #cmd = 'tools/prodigal/prodigal'
+-        #cmd += ' -i fasta_to_do_hmm_{}.fa -p meta -a protein_{}.fa'.format(self.index, self.index)
+-
+-        no_binary_cmd = f"prodigal -i fasta_to_do_hmm_{self.index}.fa -p meta -a protein_{self.index}.fa"
+-        process = subprocess.Popen(no_binary_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+-        a, b = process.communicate()
++        # step1 patch: checked subprocess (prodigal rc=0 even when 0 ORFs).
++        cmd = (f"prodigal -i fasta_to_do_hmm_{self.index}.fa "
++               f"-p meta -a protein_{self.index}.fa")
++        _patched_run(cmd, label=f"per_array_prodigal_{self.index}")
+ 
+     def _run_hmm_search(self, hmm_model):
++        # step1 patch: fix the broken f-string that passed the literal string
++        # `hmm_model` instead of {hmm_model}; use absolute hmmsearch via PATH;
++        # legitimate 0-ORF case still sets hmm_score=0.0 as before.
+         if os.stat('protein_{}.fa'.format(self.index)).st_size != 0:
+-            #cmd = 'tools/hmm_search/hmmsearch --tblout {} {} {}'.format('result_hmm_{}.out'.format(self.index),
+-            #                                                            hmm_model,
+-            #                                                            'protein_{}.fa'.format(self.index))
+-
+-            no_binary_cmd = f"tools/hmm_search/hmmsearch --tblout result_hmm_{self.index}.out hmm_model protein_{self.index}.fa"
+-
+-            process = subprocess.Popen(no_binary_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+-            process.communicate()
++            cmd = (f"hmmsearch --tblout result_hmm_{self.index}.out "
++                   f"{hmm_model} protein_{self.index}.fa")
++            _patched_run(cmd, label=f"per_array_hmm_{self.index}")
+         else:
+             self.hmm_score = 0.0
+ 

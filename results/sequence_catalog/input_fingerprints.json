@@ -1,0 +1,39 @@
+{
+  "input_coordinate_catalog": {
+    "crispr_arrays.tsv": {
+      "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/results/coordinate_catalog/crispr_arrays.tsv",
+      "sha256": "c8abf7fdd01325bc6fa7b3eb3624e0d1fe246dfd1037dfd030c9e56af419028c",
+      "size": 22047322
+    },
+    "crispr_arrays_trusted.tsv": {
+      "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/results/coordinate_catalog/crispr_arrays_trusted.tsv",
+      "sha256": "8de38b133fe834b381b61192f897efb76b4ebb363bd80535d3306dd993a43d33",
+      "size": 304556
+    },
+    "mini_arrays.tsv": {
+      "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/results/coordinate_catalog/mini_arrays.tsv",
+      "sha256": "caa77008f5c3215bac9debf43416da24ceec8a9775c64f4f557ca3a8d9757948",
+      "size": 13244
+    },
+    "edge_unresolved_candidates.tsv": {
+      "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/results/coordinate_catalog/edge_unresolved_candidates.tsv",
+      "sha256": "12463054ddf8a159b481d80202785f1ee49ad5546235fe03fceee3c53c2991c9",
+      "size": 3633
+    },
+    "mini_array_units.tsv": {
+      "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/results/coordinate_catalog/mini_array_units.tsv",
+      "sha256": "7fa5ba65b94df290d1f510c11a65f3bf87a89c9f22013b2099c7acd4820262b6",
+      "size": 15531
+    },
+    "coordinate_catalog_summary.md": {
+      "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/results/coordinate_catalog/coordinate_catalog_summary.md",
+      "sha256": "018ad6afd29908d5e8ea95b027529ce2046e9a197c01978694860dafe8fa0921",
+      "size": 5073
+    }
+  },
+  "input_staged_fastas": {
+    "n_files": 1000,
+    "listing_sha256": "f754e2b9ef4b65a35d8249447bb879f1e1901228ae52b782e2357cdd7a1b9822",
+    "note": "Listing-level fingerprint (filename:size) over all 1000 staged FASTAs. Individual per-file hashes omitted for speed; each staged FASTA is deterministic from Step 1's staging code (see provenance/LOCKED.md)."
+  }
+}

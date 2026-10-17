@@ -1,0 +1,105 @@
+{
+  "window": "sacct from 2026-10-15 00:00, filter --state=COMPLETED",
+  "note": "CPUTimeRAW is reported by SLURM; it equals AllocCPUS \u00d7 wall for each job.",
+  "identify": {
+    "n_completed": 1126,
+    "wall_sec": {
+      "n": 1126,
+      "sum": 146672,
+      "mean": 130.26,
+      "median": 96.0,
+      "p95": 343,
+      "max": 1209
+    },
+    "cpu_sec": {
+      "n": 1126,
+      "sum": 586688,
+      "mean": 521.04,
+      "median": 384.0,
+      "p95": 1372,
+      "max": 4836
+    },
+    "alloc_cpus_per_job": [
+      4
+    ]
+  },
+  "cctyper": {
+    "n_completed": 993,
+    "wall_sec": {
+      "n": 993,
+      "sum": 25102,
+      "mean": 25.28,
+      "median": 23,
+      "p95": 45,
+      "max": 84
+    },
+    "cpu_sec": {
+      "n": 993,
+      "sum": 100408,
+      "mean": 101.12,
+      "median": 92,
+      "p95": 180,
+      "max": 336
+    },
+    "alloc_cpus_per_job": [
+      4
+    ]
+  },
+  "combined_per_genome": {
+    "cpu_sec_mean": 622.16,
+    "cpu_sec_median": 476.0,
+    "cpu_hours_mean": 0.1728,
+    "cpu_hours_median": 0.1322,
+    "wall_sec_mean": 155.54,
+    "wall_sec_median": 119.0
+  },
+  "disk": {
+    "fixed_overhead": {
+      "envs": {
+        "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/envs",
+        "bytes": 5508699838
+      },
+      "software": {
+        "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/software",
+        "bytes": 982948577
+      },
+      "provenance": {
+        "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/provenance",
+        "bytes": 66112
+      }
+    },
+    "variable_per_genome": {
+      "staged_input": {
+        "total_bytes": 2899725668,
+        "n_items": 1000,
+        "per_item_bytes": 2899725.7
+      },
+      "raw_patched_identify": {
+        "total_bytes": 293523608,
+        "n_items": 1000,
+        "per_item_bytes": 293523.6
+      },
+      "raw_cctyper": {
+        "total_bytes": 154064924,
+        "n_items": 1000,
+        "per_item_bytes": 154064.9
+      }
+    },
+    "peak_temporary_during_run": {
+      "work_patched": {
+        "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/work_patched",
+        "bytes": 141533175,
+        "note": "steady-state after cleanup \u2014 true peak was higher"
+      }
+    },
+    "results_cumulative": {
+      "path": "/groups/rubin/projects/kuang/out/CRISPR_array_related/results",
+      "bytes": 3954126973,
+      "note": "4 variant trees + reports + metrics"
+    },
+    "summary": {
+      "fixed_overhead_bytes": 6491714527,
+      "variable_per_genome_bytes": 3347314.2
+    }
+  }
+}

@@ -1,0 +1,1090 @@
+{
+  "families_total": 155,
+  "rows": [
+    {
+      "family_id": "fam_046ff9afd865a97ab301",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_06f90703a567a4674149",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_0990b1144438c496d4d4",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_0beebac8beac05264b4c",
+      "n_repeats": 1,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_0cf6ecb62bb5aafb0abe",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_0d8b25611e499d8ebdfa",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_0dd28085a756aacc6db5",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_0f3fd02c61232745c365",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_12de37b63356e8a5bf00",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_135e5f29f73464317f0c",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_18747d6a513562247094",
+      "n_repeats": 5,
+      "n_arrays": 8,
+      "n_genomes": 4,
+      "n_phyla": 3
+    },
+    {
+      "family_id": "fam_18fc4d01004c39ca8b3b",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_1a4f139c694fa78fdc61",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_1b23be31875941438c5a",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_1ee58728174ed7b42475",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_21f47e42853b691d826c",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_224147e099ddbb505e3b",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_2443f1e8c238a5574614",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_2445e7fdb044d2215457",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_249a92682f65a3232978",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_26dc06856c7f90ece5a6",
+      "n_repeats": 2,
+      "n_arrays": 3,
+      "n_genomes": 2,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_272ab531ad67ee5f332f",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_27e41729166d1cd5c1cd",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_2963a5c10249e6e21416",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_2ac7203af37d24f71cd0",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_2ee201ac2a789970fbb9",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_2f1bbf6908827a027eb7",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_2f1dfeaff3223defbb11",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_2fcb11487fb018aa5d47",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_328d7c3704bdd7ba8989",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_32bff8536f7e4b0e82bd",
+      "n_repeats": 5,
+      "n_arrays": 5,
+      "n_genomes": 5,
+      "n_phyla": 5
+    },
+    {
+      "family_id": "fam_34ca0c48a261bce63c6f",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_357c134e1b51035d233b",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_38997bef4480e2da51b3",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_38f17aa57d5ce26455b8",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_3baecfb986b3b2e1908f",
+      "n_repeats": 4,
+      "n_arrays": 6,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_3cebacaf290a43997266",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_3d400126ac282bf805f3",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_3e7cc60905fd57ec044f",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_413d9d4ff77226b99447",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_4179977a0f1d4ff8a1de",
+      "n_repeats": 1,
+      "n_arrays": 5,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_41cdc7d98bb2dbf6db0b",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_426e3e797e31c958cb41",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_446fb1cba442addeba4d",
+      "n_repeats": 3,
+      "n_arrays": 4,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_459962bb5fdc6457e59a",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_480a511c9f01af15a3ae",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_483f38abd99c450ee5f5",
+      "n_repeats": 1,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_49aba598e5f7cf700fdb",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_49dc10a4e70b52b9d75c",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_4a2c409ff35f261bc860",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_4b4c296f9566886deba6",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_4d06e168febaf4ea1ff5",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_4d99bd4291053e188769",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_4e792dbed4500fc9357c",
+      "n_repeats": 4,
+      "n_arrays": 5,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_4e80ecebc6f6ab0b578c",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_5174635c6743e3ce6755",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_540fbf10709888676358",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_54bab74d4d9679688da7",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_58296ed8e1b69629a254",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_5fca7f6ba8dd144c0b7b",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_5fe10941813022aa6b1b",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_6083fce3128451ca8a0d",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_632fc7cef9370ea5f9d1",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_66bee061e8e3c086b15d",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_68fe83fabae85106b445",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_69ef251f45dbb1f62320",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_6b4187c3ca54f79ac104",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_6b83064697500dab8be0",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_6d794656246175a83634",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_6f393e61ef58ac27c10c",
+      "n_repeats": 7,
+      "n_arrays": 11,
+      "n_genomes": 7,
+      "n_phyla": 5
+    },
+    {
+      "family_id": "fam_7043042fa7c7c977bb27",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_73af99f02ff423642b8e",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_74ea3990895c1ed7905c",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_7740ce4ddc5a56d85526",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_78e8c97883afc33ab964",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_7a3350b44715e4a94bf4",
+      "n_repeats": 1,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_7a805f541ac1b6ee72cf",
+      "n_repeats": 7,
+      "n_arrays": 9,
+      "n_genomes": 9,
+      "n_phyla": 9
+    },
+    {
+      "family_id": "fam_7bb2375ba63a50da7ed1",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_7f64b6862b675c7e7360",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_85ae09b66418a8612198",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_8730d74a15ff6fa713e8",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_88b45a39a9cd4a86b359",
+      "n_repeats": 3,
+      "n_arrays": 4,
+      "n_genomes": 3,
+      "n_phyla": 3
+    },
+    {
+      "family_id": "fam_8a308c8b19be8fe37e1e",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_8a724d55bd6f27c31fbc",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_8ad1f5466c60b13b92e1",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_8b313b35d455f067f20a",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_8f504ed2ac16478bc0b9",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_905d7b1ba7bf02484906",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_951b1ece0c22d21627d8",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_96d257ca6004d9c261c1",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_98cea5e792b572ffcbb9",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_9a1e1152c64baae2e678",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_9e454cfd39371eac93e4",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_9eaddce3ab3b41301b34",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_9ec72052e1a67ca4a51c",
+      "n_repeats": 1,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_9f47b4c0ad8e0c26615f",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_a0f76f61e1bfaba5d8b6",
+      "n_repeats": 1,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_a2049feef435fe259020",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_a2525a83ec2f227c6de1",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_a443d429f5f7bae9068a",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_a4dd83468c67aac96afe",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_a6b21b987c9736dcd52b",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_a7db4a3acb96dd4bd512",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_a9734a96ec1d5843b919",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_a9efc7044c6e52f6cce2",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_ae1d60c0289e6308eb18",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_aeb615e3e448a94a7848",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_af13e35177924d471b9b",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_af509e61f8f29e499f3c",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_afdbb30086d14a4140e1",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_b33b70bea1d51d9f6d77",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_b6481bfeb11444d6cb27",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_bae5f5297158c708d0b0",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_bb5d3ea7279c96c373c1",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_beae45c5644ed5fb64df",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_c2c6889cf1bd955c836f",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_c3931086189c927be09c",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_c48dbc07cc96a5ffbf0e",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_c4b89f53dbb7c8217685",
+      "n_repeats": 3,
+      "n_arrays": 3,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_c6f3d2d481d8b0339074",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_c72f607d571be4b9d8ae",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_c746fdff9d0f000b08a8",
+      "n_repeats": 3,
+      "n_arrays": 4,
+      "n_genomes": 4,
+      "n_phyla": 3
+    },
+    {
+      "family_id": "fam_c9653431dc75f13ff2f0",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_ca42fc7a8d6fee2586f9",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_cb4c87470f471982b7f4",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_cbf78ebfcc49e1ceb020",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_cebdeaa902d58c7cc742",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_d08cd71449d5d9188464",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_d0ad1270641feb5d8b00",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_d338fe5aa1102487e5da",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_d353750f4b472b71a3a0",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_d370be3309af81f5cfc1",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_d507866ed6a2dba77d90",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_d58f0dfa54a87e30a930",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 2,
+      "n_phyla": 2
+    },
+    {
+      "family_id": "fam_d61d8bde6f18bf37ffff",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_da5ca97d99eb1a6ae280",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_dabb5622b9f2779acb7b",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_dadb2e5c838d283a4dc5",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_dc6e9aa8312dd471d690",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_e13c21049584e9e79e97",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_e360f0b127d7d414cbcf",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_e3e100ca3f38573ef18a",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_e54802bb94a517118fde",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_e8ffefd1772c863a43fd",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_e9c8b784e19544c7fa04",
+      "n_repeats": 3,
+      "n_arrays": 3,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_ed11092ebd29e89b2fa5",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_ed670eb6e7c8594a720f",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_ef790fbe83009c1f1ad9",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_efc39309e80082166c38",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_f157ac294f187ec38b65",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_f1f49dd2ab819b6d293d",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_fa4d8d28153f64bce1d6",
+      "n_repeats": 1,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_fccd229801b2b66c5115",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_fdded552ea7dc33b48fc",
+      "n_repeats": 2,
+      "n_arrays": 2,
+      "n_genomes": 1,
+      "n_phyla": 1
+    },
+    {
+      "family_id": "fam_fe15ad75486f8e6a3a70",
+      "n_repeats": 1,
+      "n_arrays": 1,
+      "n_genomes": 1,
+      "n_phyla": 1
+    }
+  ]
+}

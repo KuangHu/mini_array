@@ -1,0 +1,35 @@
+{
+  "identify": {
+    "n_total": 1126,
+    "n_completed": 1126,
+    "n_failed": 0,
+    "wall_sec_median": 96.0,
+    "wall_sec_mean": 130.3,
+    "wall_sec_max": 1209,
+    "wall_sec_p95": 343,
+    "per_genome_disk": {
+      "n": 1000,
+      "median_bytes": 194494,
+      "mean_bytes": 293523,
+      "max_bytes": 3984302,
+      "total_bytes": 293523608
+    }
+  },
+  "cctyper": {
+    "n_total": 1310,
+    "n_completed": 993,
+    "n_failed": 317,
+    "wall_sec_median": 23,
+    "wall_sec_mean": 25.3,
+    "wall_sec_max": 84,
+    "wall_sec_p95": 45,
+    "per_genome_disk": {
+      "n": 1000,
+      "median_bytes": 138821,
+      "mean_bytes": 154064,
+      "max_bytes": 908845,
+      "total_bytes": 154064924
+    }
+  },
+  "staged_input_bytes": 2899725668
+}

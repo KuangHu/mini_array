@@ -1,0 +1,11 @@
+{
+  "bona_fide_total": 658,
+  "coord_pass": 652,
+  "hq_at_primary": 239,
+  "reserve_at_primary": 413,
+  "reserve_reasons": {
+    "flank": 401,
+    "ambiguous_bases_in_context": 22,
+    "n_full_repeats": 1
+  }
+}

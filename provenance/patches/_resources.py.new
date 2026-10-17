@@ -1,0 +1,111 @@
+"""Resource + subprocess helpers for the patched CRISPRidentify fork.
+
+Added by step-1 pipeline (not upstream). Purpose:
+  - Resolve BLAST DBs and HMM model via absolute paths so cwd changes do not
+    silently break feature extraction. (Upstream committed relative paths like
+    `tools/blasting/Verified_repeats_dataset1.fa` which only resolve when cwd
+    is CRISPRidentify's own source directory.)
+  - Pre-flight check all required resources + external executables; abort loud
+    on any missing dependency.
+  - Wrap subprocess calls so that non-zero exit codes become explicit
+    `FeatureExtractionError`, distinguishable from legitimate zero-hit output.
+
+The classifier (model=ALL), feature extraction order, and all search
+parameters remain exactly as upstream.
+"""
+from __future__ import annotations
+
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+
+class FeatureExtractionError(RuntimeError):
+    """Signals a resource- or execution-level failure during feature
+    extraction. Must NOT be swallowed into a zero-value feature — the caller
+    is expected to propagate this and mark the whole task as failed, so the
+    classifier never receives a bogus zero in place of a missing feature."""
+
+
+# tools dir is resolved relative to this file (components/_resources.py →
+# <install root>/tools), with env var override for ad-hoc testing.
+_HERE = Path(__file__).resolve().parent
+_DEFAULT_TOOLS = _HERE.parent / "tools"
+TOOLS_DIR = Path(os.environ.get("CRISPRIDENTIFY_TOOLS_DIR", str(_DEFAULT_TOOLS))).resolve()
+
+
+def blast_db(name: str) -> Path:
+    """Absolute path to a BLAST DB basename inside tools/blasting/."""
+    return TOOLS_DIR / "blasting" / name
+
+
+def hmm_model(name: str = "models_tandem.hmm") -> Path:
+    return TOOLS_DIR / "hmm_search" / name
+
+
+def require(path: Path, kind: str) -> Path:
+    if not path.exists():
+        raise FeatureExtractionError(
+            f"missing {kind} resource: {path}. "
+            f"Set CRISPRIDENTIFY_TOOLS_DIR or populate the tools/ directory."
+        )
+    return path
+
+
+def require_blast_db(name: str) -> Path:
+    """A BLAST DB is 'present' iff the .nhr/.nin/.nsq companions exist."""
+    base = blast_db(name)
+    require(base, "BLAST DB base FASTA")
+    for suffix in (".nhr", ".nin", ".nsq"):
+        require(Path(str(base) + suffix), f"BLAST DB companion {suffix}")
+    return base
+
+
+def require_executable(name: str) -> str:
+    """Return the resolved absolute path of an external executable (or raise)."""
+    path = shutil.which(name)
+    if not path:
+        raise FeatureExtractionError(f"required executable not on PATH: {name}")
+    return path
+
+
+def preflight() -> dict:
+    """Validate all resources + external tools at Pipeline init time.
+
+    Called before any task starts. Raises FeatureExtractionError with a clear
+    message if anything required is missing, so Pipeline fails fast rather
+    than silently producing zero-valued features.
+    """
+    info: dict = {"tools_dir": str(TOOLS_DIR), "resources": {}, "executables": {}}
+    info["resources"]["Verified_repeats_dataset1.fa"] = str(
+        require_blast_db("Verified_repeats_dataset1.fa"))
+    info["resources"]["Verified_repeats_dataset2.fa"] = str(
+        require_blast_db("Verified_repeats_dataset2.fa"))
+    info["resources"]["models_tandem.hmm"] = str(require(hmm_model(), "HMM model"))
+    for exe in ("blastn", "hmmsearch", "prodigal", "vmatch", "mkvtree",
+                "clustalo", "RNAfold"):
+        info["executables"][exe] = require_executable(exe)
+    return info
+
+
+def run_subprocess(cmd: str, *, label: str, allow_empty_output: bool = True
+                   ) -> subprocess.CompletedProcess:
+    """Run a shell command and raise FeatureExtractionError on non-zero exit.
+
+    This replaces the upstream pattern of `subprocess.Popen(..., shell=True);
+    process.communicate()` with no exit-code check. Legitimate no-hit cases
+    (BLAST/HMM returning no matches with exit 0) are still allowed — the
+    caller handles empty output files as score=0.0.
+
+    `label` identifies the feature path for error messages.
+    """
+    r = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    if r.returncode != 0:
+        raise FeatureExtractionError(
+            f"[{label}] subprocess failed (rc={r.returncode})\n"
+            f"  cmd    : {cmd}\n"
+            f"  stdout : {r.stdout[-400:]!r}\n"
+            f"  stderr : {r.stderr[-400:]!r}"
+        )
+    return r

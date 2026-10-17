@@ -1,0 +1,69 @@
+schema_version: 1
+
+# Frozen Step-1 inputs we are allowed to use (per 2026-10-16 approval):
+# - 1000 completed genomes under batch-1000 pilot
+# - All 213 NR100 HQ repeat sequences from primary 0.75 as queries
+# - 0.90 HQ (65) as a strict-support flag only
+project_root: /groups/rubin/projects/kuang/out/CRISPR_array_related
+code_root: /home/kuangh/tools/CRISPR_array_related
+
+queries_fna: results/step1_patched_min_score_0.75/repeats.hq.nr100.fna
+strict_queries_fna: results/step1_patched_min_score_0.90/repeats.hq.nr100.fna
+staged_dir: input/staged
+known_array_bed: results/step1_patched_min_score_0.75/known_array_regions.bed
+arrays_all_tsv: results/step1_patched_min_score_0.75/arrays.all.tsv
+
+output_dir: results/step2_pilot
+
+# -------- Anchor + second-repeat search parameters --------
+# Full-length repeat anchor hit: ≥90% query coverage AND ≥90% identity.
+# Second repeat allowed to be truncated (coverage ≥ secondary_min_cov) or
+# degenerate (identity ≥ secondary_min_identity). Both strands are scanned;
+# alignment orientation is retained raw. Canonical direction of a query is
+# NOT treated as a transcription direction.
+anchor:
+  min_cov_query: 0.90
+  min_identity: 0.90
+second_repeat:
+  min_cov_query: 0.60    # allows truncated end
+  min_identity: 0.70     # allows degenerate copy
+
+# Spacer window measured as the gap between the aligned boundaries of two
+# repeats on the same contig, same strand orientation. Mini-array pairing
+# requires 15–60 nt spacer per the user's Step-2 instruction.
+spacer:
+  min_len: 15
+  max_len: 60
+
+# Overlap handling: if two anchor hits overlap on the same strand within
+# `overlap_merge_bp`, keep the one with higher bit-score. Dedup loci on
+# `locus_dedup_merge_bp` genomic distance.
+overlap_merge_bp: 10
+locus_dedup_merge_bp: 60
+
+# -------- BLAST tuning --------
+# Permissive settings so partial / degenerate copies survive; strict filters
+# applied downstream in Python.
+blast:
+  word_size: 7
+  evalue: 10
+  dust: "no"
+  outfmt: "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore qlen slen sstrand"
+
+# -------- Background control (composition-matched shuffle) --------
+# Shuffle each query preserving its mono- and di-nucleotide composition
+# (dinucShuffle). Run the same anchor + second-repeat pipeline on these
+# shuffled queries. The result is a background estimate, NOT a calibrated FDR.
+background:
+  method: dinuc_shuffle
+  n_replicates: 3
+  seed: 42
+  include_in_output: true
+
+# -------- Resource caps for this pilot (user-requested explicit limits) --------
+execution:
+  max_concurrent_jobs: 4
+  cpus_per_job: 8
+  mem_per_job_gb: 32
+  tmp_disk_cap_gb: 50
+  wall_time_h: 6

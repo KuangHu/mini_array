@@ -1,0 +1,13 @@
+{
+  "assumed_full_n": 107235,
+  "cpu_hours_est": 14178.8,
+  "wall_hours_at_30_concurrent_jobs": 118.2,
+  "disk_identify_bytes_est": 20856564090,
+  "disk_cctyper_bytes_est": 14886469935,
+  "disk_staged_bytes_est": 310952082007,
+  "notes": [
+    "CPU-hour estimate assumes identify + cctyper medians per genome.",
+    "Wall-hour estimate assumes 30 jobs in flight on the standard partition.",
+    "Disk estimates scale per-genome medians to the full 107k bac120 reps."
+  ]
+}

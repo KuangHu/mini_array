@@ -1,0 +1,22 @@
+{
+  "expected": {
+    "crispr_arrays.all_calls.fna": 70207,
+    "crispr_arrays.trusted_calls.fna": 1205,
+    "mini_arrays.fna": 40,
+    "edge_unresolved_candidates.fna": 11,
+    "mini_array_units.fna": 210
+  },
+  "actual_counts": {
+    "crispr_arrays.all_calls.fna": 70207,
+    "crispr_arrays.trusted_calls.fna": 1205,
+    "mini_arrays.fna": 40,
+    "edge_unresolved_candidates.fna": 11,
+    "mini_array_units.fna": 210
+  },
+  "issues": {
+    "length_mismatch": 0,
+    "seq_mismatch": 0,
+    "missing_contig": 0,
+    "unexpected_rows": {}
+  }
+}
