@@ -1,249 +1,186 @@
 #!/usr/bin/env python3
-"""Step 2 pilot driver.
-
-Pipeline:
-  1. Read config/step2.yaml
-  2. Build a combined BLAST DB from all staged *.fna (once)
-  3. Run blastn with the real queries → hits_real.tsv
-  4. (If background enabled) shuffle queries and run blastn → hits_bg_*.tsv
-  5. Parse hits, apply anchor + secondary filters, find pairs → pairs_real.tsv
-     (and pairs_bg_*.tsv)
-  6. Dedup pair footprints → loci.tsv (+ attributions)
-  7. Classify each locus by context mask (known_array_bed + arrays.all)
-  8. Write loci_classified.tsv + SUMMARY.md
-"""
+"""Step 2 v2: coherent bidirectional pairing; edge records are audit-only."""
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shutil
-import subprocess
 import sys
-import time
 from collections import Counter
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from step2_lib import context as context_mod  # noqa: E402
-from step2_lib import dedup as dedup_mod  # noqa: E402
-from step2_lib import dinuc_shuffle  # noqa: E402
-from step2_lib import pair as pair_mod  # noqa: E402
-from step2_lib import search  # noqa: E402
-
-try:
-    import yaml
-except ImportError:
-    sys.stderr.write("PyYAML required — run inside envs/driver.\n")
-    raise
+import yaml
+from step2_lib import context, dedup, dinuc_shuffle, pair, search
 
 
 def load_cfg(path: Path) -> dict:
     cfg = yaml.safe_load(path.read_text())
-    cfg["project_root"] = Path(cfg["project_root"]).resolve()
+    if cfg.get("schema_version") != 2:
+        raise ValueError("Step 2 v2 requires schema_version: 2")
+    cfg["project_root"] = Path(os.environ.get("PROJECT_ROOT", cfg["project_root"])).resolve()
     cfg["code_root"] = Path(cfg["code_root"]).resolve()
     return cfg
 
 
 def _read_fasta(path: Path) -> list[tuple[str, str]]:
     records = []
-    cur_h = None
-    cur_s = []
-    with path.open() as fh:
-        for line in fh:
-            if line.startswith(">"):
-                if cur_h is not None:
-                    records.append((cur_h, "".join(cur_s)))
-                cur_h = line[1:].strip()
-                cur_s = []
-            else:
-                cur_s.append(line.strip())
-        if cur_h is not None:
-            records.append((cur_h, "".join(cur_s)))
-    return records
+    for line in path.read_text().splitlines():
+        if line.startswith(">"):
+            records.append([line[1:].strip(), ""])
+        elif line.strip():
+            records[-1][1] += line.strip()
+    return [(h, s) for h, s in records]
 
 
-def _write_fasta(records: list[tuple[str, str]], path: Path) -> None:
-    with path.open("w") as fh:
-        for h, s in records:
-            fh.write(f">{h}\n{s}\n")
+def _write_fasta(records, path):
+    path.write_text("".join(f">{h}\n{s}\n" for h, s in records))
 
 
-def _blastdb_env_bin(cfg: dict) -> Path:
-    return cfg["project_root"] / "envs" / "identify" / "bin"
+def sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as fh:
+        for block in iter(lambda: fh.read(1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
 
 
-def do_run(cfg: dict, *, run_background: bool = True,
-            keep_blastdb: bool = True) -> None:
+def require_v2_run(directory: Path, cfg: dict | None = None) -> dict:
+    meta = json.loads((directory / "run_manifest.json").read_text())
+    if meta.get("method_version") != pair.METHOD_VERSION or meta.get("status") != "complete":
+        raise ValueError("A completed Step 2 v2 run is required; rerun raw hits first")
+    for name, digest in meta["outputs_sha256"].items():
+        if sha256(directory / name) != digest:
+            raise ValueError(f"Step 2 output changed since completion: {name}")
+    if cfg is not None:
+        for key in ("anchor", "second_repeat", "spacer", "edge", "locus_dedup_merge_bp",
+                    "queries_fna", "strict_queries_fna", "known_array_bed", "arrays_all_tsv", "staged_dir"):
+            if meta["config"][key] != cfg[key]:
+                raise ValueError(f"Config differs from the completed Step 2 run: {key}")
+        for name, digest in meta["input_sha256"].items():
+            if sha256(cfg["project_root"] / name) != digest:
+                raise ValueError(f"Step 2 input changed since completion: {name}")
+    return meta
+
+
+def process_hits(hits, cfg, output: Path, name: str):
+    """Identical rules for real and shuffled controls. Return accepted pairs only."""
+    params = dict(anchor_min_cov=cfg["anchor"]["min_cov_query"],
+                  anchor_min_id=cfg["anchor"]["min_identity"],
+                  second_min_cov=cfg["second_repeat"]["min_cov_query"],
+                  second_min_id=cfg["second_repeat"]["min_identity"])
+    anchors, secondary = pair.classify_hits(hits, **params)
+    found = pair.find_pairs(hits, **params,
+                           spacer_min=cfg["spacer"]["min_len"],
+                           spacer_max=cfg["spacer"]["max_len"],
+                           min_flank_bp=cfg["edge"]["min_flank_bp"])
+    accepted = [p for p in found if not p.edge_excluded]
+    excluded = [p for p in found if p.edge_excluded]
+    pair.write_pairs_tsv(accepted, output / f"pairs_{name}.tsv")
+    pair.write_pairs_tsv(excluded, output / f"pairs_{name}.edge_excluded.tsv")
+    kinds = Counter(p.pair_kind for p in accepted)
+    for kind in ("mini_array", "half_repeat"):
+        pair.write_pairs_tsv([p for p in accepted if p.pair_kind == kind],
+                             output / f"pairs_{name}.{kind}.tsv")
+    return accepted, dict(raw_hits=len(hits), anchors=len(anchors),
+                         secondary_passing=len(secondary), pairs=len(accepted),
+                         mini_array=kinds["mini_array"], half_repeat=kinds["half_repeat"],
+                         edge_excluded=len(excluded))
+
+
+def do_run(cfg: dict, *, run_background=True, hits_dir: Path | None = None) -> None:
     p = cfg["project_root"]
-    out_dir = p / cfg["output_dir"]
-    out_dir.mkdir(parents=True, exist_ok=True)
-    db_prefix = out_dir / "subject_db" / "contigs"
-    env_bin = _blastdb_env_bin(cfg)
-
-    log = out_dir / "step2.log"
-    def _log(msg: str) -> None:
-        print(msg)
-        with log.open("a") as fh:
-            fh.write(f"{time.strftime('%H:%M:%S')} {msg}\n")
-
-    _log(f"env_bin={env_bin}, output={out_dir}")
-
-    # 1. Build combined DB if not present
-    db_meta = db_prefix.parent / ".built"
-    if not db_meta.is_file():
-        _log("[build_subject_db] concatenating staged FASTAs and running makeblastdb…")
-        search.build_subject_db(p / cfg["staged_dir"], db_prefix, env_bin)
-        db_meta.write_text("ok\n")
-        _log("[build_subject_db] done")
-    else:
-        _log("[build_subject_db] reusing existing DB")
-
-    # 2. Run blastn with real queries
-    real_queries = p / cfg["queries_fna"]
-    hits_real = out_dir / "hits_real.tsv"
-    _log(f"[blastn real] {real_queries} → {hits_real}")
-    search.run_blastn(real_queries, db_prefix, hits_real, env_bin,
-                       threads=cfg["execution"]["cpus_per_job"],
-                       word_size=cfg["blast"]["word_size"],
-                       evalue=cfg["blast"]["evalue"],
-                       dust=cfg["blast"]["dust"],
-                       outfmt=cfg["blast"]["outfmt"])
-    _log(f"[blastn real] done ({hits_real.stat().st_size} bytes)")
-
-    # 3. (Optional) background
-    bg_hits_files: list[Path] = []
+    out = p / cfg["output_dir"]
+    if out.name == "step2_pilot":
+        raise ValueError("Historical step2_pilot is frozen; select a new output directory")
+    out.mkdir(parents=True, exist_ok=True)
+    # Never combine new real pairs with stale controls or downstream artifacts.
+    if any(out.iterdir()):
+        raise ValueError(f"Output must be empty: {out}; choose a fresh run directory")
+    manifest = {"method_version": pair.METHOD_VERSION, "status": "running",
+                "config": {k: str(v) if isinstance(v, Path) else v for k, v in cfg.items()},
+                "source_hits": {}, "replayed": hits_dir is not None,
+                "input_sha256": {cfg[k]: sha256(p / cfg[k]) for k in
+                                 ("queries_fna", "strict_queries_fna", "known_array_bed", "arrays_all_tsv")},
+                "code_sha256": {str(f.relative_to(Path(__file__).parent)): sha256(f) for f in
+                                [Path(__file__), *sorted((Path(__file__).parent / "step2_lib").glob("*.py"))]}}
+    manifest_path = out / "run_manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
+    names = ["real"]
     if run_background:
-        bg_cfg = cfg.get("background", {}) or {}
-        n_rep = int(bg_cfg.get("n_replicates", 0))
-        if n_rep:
-            seed = int(bg_cfg.get("seed", 42))
-            records = _read_fasta(real_queries)
-            for rep in range(n_rep):
-                shuffled = dinuc_shuffle.shuffle_fasta_records(records, seed, rep)
-                bg_fa = out_dir / f"bg_queries_rep{rep}.fna"
-                _write_fasta(shuffled, bg_fa)
-                bg_hits = out_dir / f"hits_bg_rep{rep}.tsv"
-                _log(f"[blastn bg {rep}] {bg_fa.name} → {bg_hits.name}")
-                search.run_blastn(bg_fa, db_prefix, bg_hits, env_bin,
-                                   threads=cfg["execution"]["cpus_per_job"],
-                                   word_size=cfg["blast"]["word_size"],
-                                   evalue=cfg["blast"]["evalue"],
-                                   dust=cfg["blast"]["dust"],
-                                   outfmt=cfg["blast"]["outfmt"])
-                bg_hits_files.append(bg_hits)
-                _log(f"[blastn bg {rep}] done ({bg_hits.stat().st_size} bytes)")
-
-    # 4. Parse hits and pair repeats
-    hits = search.read_hits(hits_real)
-    _log(f"[pairs real] {len(hits)} raw hits")
-    anchors, secondary = pair_mod.classify_hits(
-        hits,
-        anchor_min_cov=cfg["anchor"]["min_cov_query"],
-        anchor_min_id=cfg["anchor"]["min_identity"],
-        second_min_cov=cfg["second_repeat"]["min_cov_query"],
-        second_min_id=cfg["second_repeat"]["min_identity"],
-    )
-    pairs = pair_mod.find_pairs(
-        hits,
-        anchor_min_cov=cfg["anchor"]["min_cov_query"],
-        anchor_min_id=cfg["anchor"]["min_identity"],
-        second_min_cov=cfg["second_repeat"]["min_cov_query"],
-        second_min_id=cfg["second_repeat"]["min_identity"],
-        spacer_min=cfg["spacer"]["min_len"],
-        spacer_max=cfg["spacer"]["max_len"],
-        overlap_merge_bp=cfg["overlap_merge_bp"],
-    )
-    _log(f"[pairs real] {len(anchors)} anchors, {len(secondary)} secondary-passing, "
-          f"{len(pairs)} pairs")
-    pair_mod.write_pairs_tsv(pairs, out_dir / "pairs_real.tsv")
-
-    # Background pair counts (for comparison only)
-    bg_summary = []
-    for bg_hits_file in bg_hits_files:
-        bg_hits = search.read_hits(bg_hits_file)
-        bg_anchors, _bg_sec = pair_mod.classify_hits(
-            bg_hits,
-            anchor_min_cov=cfg["anchor"]["min_cov_query"],
-            anchor_min_id=cfg["anchor"]["min_identity"],
-            second_min_cov=cfg["second_repeat"]["min_cov_query"],
-            second_min_id=cfg["second_repeat"]["min_identity"],
-        )
-        bg_pairs = pair_mod.find_pairs(
-            bg_hits,
-            anchor_min_cov=cfg["anchor"]["min_cov_query"],
-            anchor_min_id=cfg["anchor"]["min_identity"],
-            second_min_cov=cfg["second_repeat"]["min_cov_query"],
-            second_min_id=cfg["second_repeat"]["min_identity"],
-            spacer_min=cfg["spacer"]["min_len"],
-            spacer_max=cfg["spacer"]["max_len"],
-            overlap_merge_bp=cfg["overlap_merge_bp"],
-        )
-        bg_pairs_tsv = out_dir / f"pairs_{bg_hits_file.stem.replace('hits_','')}.tsv"
-        pair_mod.write_pairs_tsv(bg_pairs, bg_pairs_tsv)
-        bg_summary.append({
-            "replicate": bg_hits_file.stem,
-            "raw_hits": len(bg_hits),
-            "anchors": len(bg_anchors),
-            "pairs": len(bg_pairs),
-        })
-        _log(f"[pairs {bg_hits_file.stem}] {len(bg_hits)} hits / {len(bg_anchors)} anchors / {len(bg_pairs)} pairs")
-
-    # 5. Dedup to loci and attach context
-    loci = dedup_mod.dedup(pairs, cfg["locus_dedup_merge_bp"])
-    hard = context_mod.load_known_array_bed(p / cfg["known_array_bed"])
-    soft = context_mod.load_soft_context(p / cfg["arrays_all_tsv"])
-    contig_lengths = context_mod.contig_lengths_from_staged(p / cfg["staged_dir"])
-    for L in loci:
-        L.context = context_mod.classify_locus(
-            L.contig, L.start0, L.end0, hard, soft, contig_lengths,
-        )
-
-    strict_qids = set()
-    strict_fa = p / cfg["strict_queries_fna"]
-    if strict_fa.is_file():
-        for h, _ in _read_fasta(strict_fa):
-            strict_qids.add(h.split()[0])
-
-    dedup_mod.write_loci_tsv(loci, out_dir / "loci.tsv", strict_qids)
-    dedup_mod.write_locus_attributions(loci, out_dir / "loci_attributions.tsv")
-
-    # 6. Summarise
-    bucket_counts = Counter(L.context for L in loci)
-    summary = {
-        "total_raw_hits": len(hits),
-        "anchors": len(anchors),
-        "secondary_passing": len(secondary),
-        "pairs_real": len(pairs),
-        "loci_real": len(loci),
-        "genomes_with_locus": len({L.contig.rsplit("_", 1)[0] for L in loci}),
-        "bucket_counts": dict(bucket_counts),
-        "background_summary": bg_summary,
-        "strict_support_loci": sum(1 for L in loci if any(q in strict_qids for q in L.queries)),
-    }
-    (out_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
-    _log(f"[summary] loci={len(loci)}  buckets={dict(bucket_counts)}  "
-          f"strict_support={summary['strict_support_loci']}  "
-          f"bg_runs={len(bg_summary)}")
-
+        names += [f"bg_rep{i}" for i in range(cfg["background"]["n_replicates"])]
+    real_queries = p / cfg["queries_fna"]
+    if hits_dir is not None:
+        for name in names:
+            src = hits_dir / f"hits_{name}.tsv"
+            shutil.copyfile(src, out / src.name)  # missing requested controls are an error
+            manifest["source_hits"][name] = {"path": str(src.resolve()), "sha256": sha256(src)}
+        for name in names[1:]:
+            src = hits_dir / f"bg_queries_{name.removeprefix('bg_')}.fna"
+            if src.is_file():
+                shutil.copyfile(src, out / src.name)
+    else:
+        env_bin = p / "envs" / "identify" / "bin"
+        db = out / "subject_db" / "contigs"
+        search.build_subject_db(p / cfg["staged_dir"], db, env_bin)
+        records = _read_fasta(real_queries)
+        for name in names:
+            queries = real_queries
+            if name != "real":
+                rep = int(name.removeprefix("bg_rep"))
+                queries = out / f"bg_queries_rep{rep}.fna"
+                _write_fasta(dinuc_shuffle.shuffle_fasta_records(records, cfg["background"]["seed"], rep), queries)
+            dest = out / f"hits_{name}.tsv"
+            search.run_blastn(queries, db, dest, env_bin,
+                             threads=cfg["execution"]["cpus_per_job"],
+                             word_size=cfg["blast"]["word_size"], evalue=cfg["blast"]["evalue"],
+                             dust=cfg["blast"]["dust"], outfmt=cfg["blast"]["outfmt"])
+            manifest["source_hits"][name] = {"path": str(dest), "sha256": sha256(dest)}
+    stats = {}
+    for name in names:
+        accepted, stats[name] = process_hits(search.read_hits(out / f"hits_{name}.tsv"), cfg, out, name)
+        if name == "real":
+            pairs = accepted
+    loci = dedup.dedup(pairs, cfg["locus_dedup_merge_bp"])
+    hard = context.load_known_array_bed(p / cfg["known_array_bed"])
+    soft = context.load_soft_context(p / cfg["arrays_all_tsv"])
+    lengths = context.contig_lengths_from_staged(p / cfg["staged_dir"])
+    for pp in pairs:
+        if lengths.get(pp.contig) != pp.contig_length:
+            raise ValueError(f"BLAST/staged contig length mismatch: {pp.contig}")
+    for locus in loci:
+        locus.context = context.classify_locus(locus.contig, locus.start0, locus.end0,
+                                               hard, soft, lengths, cfg["edge"]["min_flank_bp"])
+        if locus.context == "contig_edge":
+            raise ValueError("Edge pair leaked into accepted loci")
+    strict = {h.split()[0] for h, _ in _read_fasta(p / cfg["strict_queries_fna"])}
+    dedup.write_loci_tsv(loci, out / "loci.tsv", strict)
+    dedup.write_locus_attributions(loci, out / "loci_attributions.tsv")
+    summary = {"method_version": pair.METHOD_VERSION, "pair_counts": stats,
+               "loci_real": len(loci), "bucket_counts": dict(Counter(l.context for l in loci)),
+               "strict_support_loci": sum(bool(l.queries & strict) for l in loci),
+               "background_is_calibrated_fdr": False}
+    (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    manifest["status"] = "complete"
+    manifest["outputs_sha256"] = {f.name: sha256(f) for f in sorted(out.glob("*.tsv"))}
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     print(json.dumps(summary, indent=2))
 
 
-def main(argv: list[str]) -> int:
+def main(argv=None):
     from _slurm_gate import require_slurm
     require_slurm()
-    p = argparse.ArgumentParser(prog="step2.py")
-    sub = p.add_subparsers(dest="cmd", required=True)
-    r = sub.add_parser("run")
-    r.add_argument("--config", required=True, type=Path)
-    r.add_argument("--no-background", action="store_true")
-    args = p.parse_args(argv)
-    cfg = load_cfg(args.config)
-    if args.cmd == "run":
-        do_run(cfg, run_background=not args.no_background)
-        return 0
-    return 2
+    ap = argparse.ArgumentParser()
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    run = sub.add_parser("run")
+    run.add_argument("--config", type=Path, required=True)
+    run.add_argument("--no-background", action="store_true")
+    run.add_argument("--hits-dir", type=Path, help="Replay raw BLAST HSPs; never replay old pairs.tsv")
+    args = ap.parse_args(argv)
+    do_run(load_cfg(args.config), run_background=not args.no_background, hits_dir=args.hits_dir)
+    return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(main())

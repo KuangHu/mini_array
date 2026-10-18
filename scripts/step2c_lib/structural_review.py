@@ -1,4 +1,4 @@
-"""Phase K2: structural_class based on actual repeat/spacer unit evidence,
+"""Phase K2: structural_class based on actual repeat unit evidence,
 not just array-level overlap.
 
 Rules (per the user instruction):
@@ -12,7 +12,7 @@ Rules (per the user instruction):
     that lack units in the footprint.
   - repeat_like_ambiguous: overlaps a Possible/Low score band but the
     unit arrangement is partial (<2 units) or ambiguous.
-  - edge_unresolved: left+right flank below `flank_bp` with no array context.
+  - edge_excluded: either flank below `flank_bp`, regardless of array context.
 """
 from __future__ import annotations
 
@@ -22,10 +22,15 @@ def classify(candidate_start0: int, candidate_end0: int,
               left_flank_bp: int, right_flank_bp: int,
               flank_bp: int, terminal_bp: int = 100) -> dict:
     reasons = []
+    if left_flank_bp < flank_bp or right_flank_bp < flank_bp:
+        return {"structural_class": "edge_excluded",
+                "reasons": [f"edge_short_flank left={left_flank_bp} right={right_flank_bp} required={flank_bp}"],
+                "n_units_inside": 0, "n_units_in_flank": 0,
+                "evidence_arrays_with_units": []}
     units_inside = [u for u in overlay["nearby_identify_units"]
-                    if u["inside_candidate"]]
+                    if u["inside_candidate"] and u["unit_kind"] == "repeat"]
     units_in_flank = [u for u in overlay["nearby_identify_units"]
-                      if not u["inside_candidate"]]
+                      if not u["inside_candidate"] and u["unit_kind"] == "repeat"]
     arrays = overlay["nearby_identify_arrays"]
     cctyper = overlay["nearby_cctyper_crisprs"]
 
@@ -33,7 +38,7 @@ def classify(candidate_start0: int, candidate_end0: int,
     arrays_with_units_in_candidate: list[str] = []
     for a in arrays:
         aid = a["array_id"]
-        if any(u["array_id"] == aid for u in units_inside):
+        if a["category_raw"] == "Bona-fide" and any(u["array_id"] == aid for u in units_inside):
             arrays_with_units_in_candidate.append(aid)
 
     # cctyper carries its own repeat annotation; treat any overlapping cctyper
@@ -86,17 +91,6 @@ def classify(candidate_start0: int, candidate_end0: int,
         )
         return {
             "structural_class": "repeat_like_ambiguous",
-            "reasons": reasons,
-            "n_units_inside": len(units_inside),
-            "n_units_in_flank": len(units_in_flank),
-            "evidence_arrays_with_units": [],
-        }
-
-    # Edge unresolved: short flank + no array context.
-    if (left_flank_bp < flank_bp or right_flank_bp < flank_bp) and not arrays and not cctyper:
-        reasons.append(f"edge_short_flank left={left_flank_bp} right={right_flank_bp}")
-        return {
-            "structural_class": "edge_unresolved",
             "reasons": reasons,
             "n_units_inside": len(units_inside),
             "n_units_in_flank": len(units_in_flank),

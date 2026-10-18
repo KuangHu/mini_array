@@ -36,9 +36,11 @@ from step2b_lib import flanks, overlay  # noqa: E402
 
 
 PROJECT = Path("/groups/rubin/projects/kuang/out/CRISPR_array_related")
-OUT = PROJECT / "results" / "step2c_pilot"
-STEP2B = PROJECT / "results" / "step2b_pilot"
-STEP2 = PROJECT / "results" / "step2_pilot"
+OUT = PROJECT / "results" / "step2c_v2"
+STEP2B = PROJECT / "results" / "step2b_v2"
+STEP2 = PROJECT / "results" / "step2_v2"
+CONFIG = HERE.parent / "config" / "step2.yaml"
+FLANK_BP = 2000
 
 MIN_PIDENT_FAM = 0.30
 MIN_COV_FAM = 0.70
@@ -62,7 +64,7 @@ def phase_physical_dedup() -> list[physical_locus.PhysicalLocus]:
 
 def phase_structural_review(phys: list[physical_locus.PhysicalLocus]) -> dict:
     # reload the identify layers once
-    cfg_path = Path("/home/kuangh/tools/CRISPR_array_related/config/step2.yaml")
+    cfg_path = CONFIG
     import yaml
     cfg = yaml.safe_load(cfg_path.read_text())
 
@@ -83,13 +85,13 @@ def phase_structural_review(phys: list[physical_locus.PhysicalLocus]) -> dict:
         cuid = L.contig_uid
         meta = contigs.get(cuid)
         if meta is None:
-            continue
+            raise ValueError(f"Missing contig metadata: {cuid}")
         guid = meta["genome_uid"]
         try:
             seq = staged_cache.get_contig_seq(guid, cuid)
         except KeyError:
-            continue
-        w = flanks.extract_with_flanks(seq, L.span_start0, L.span_end0, 2000)
+            raise ValueError(f"Missing staged sequence: {cuid}")
+        w = flanks.extract_with_flanks(seq, L.span_start0, L.span_end0, FLANK_BP)
         if guid not in orf_cache:
             orf_cache[guid] = overlay.load_cctyper_genes(guid,
                                                           PROJECT / "raw" / "cctyper")
@@ -101,13 +103,13 @@ def phase_structural_review(phys: list[physical_locus.PhysicalLocus]) -> dict:
             cctyper_crisprs_contig=cct.get((guid, cuid), []),
             cctyper_genes_contig=orf_cache[guid].get(cuid, []),
             cctyper_hmm_contig=hmm_cache[guid].get(cuid, []),
-            flank_bp=2000,
+            flank_bp=FLANK_BP,
         )
         cl = structural_review.classify(
             L.span_start0, L.span_end0, ov,
             left_flank_bp=w["left_flank_bp"],
             right_flank_bp=w["right_flank_bp"],
-            flank_bp=2000,
+            flank_bp=FLANK_BP,
         )
         classified[L.physical_locus_id] = {
             "overlay": ov,
@@ -182,13 +184,27 @@ def phase_neighborhood_cds(classified: dict, gid_to_faa: dict[str, Path],
 
 
 def main(argv: list[str]) -> int:
+    global CONFIG, PROJECT, OUT, STEP2B, STEP2, FLANK_BP
     require_slurm()
     p = argparse.ArgumentParser(prog="step2c.py")
-    p.add_argument("--phases", nargs="+",
-                   default=["dedup", "review", "proteomes", "neighborhoods",
-                             "families", "homologs", "associations", "report"],
+    p.add_argument("--config", type=Path, default=CONFIG)
+    p.add_argument("--phases", nargs="+", choices=["dedup", "review", "proteomes"],
+                   default=["dedup", "review"],
                    help="which phases to run")
     args = p.parse_args(argv)
+    from step2 import load_cfg, require_v2_run, sha256
+    CONFIG = args.config
+    cfg = load_cfg(CONFIG)
+    PROJECT = cfg["project_root"]
+    OUT, STEP2B, STEP2 = (PROJECT / cfg[k] for k in ("review_c_dir", "review_b_dir", "output_dir"))
+    FLANK_BP = cfg["edge"]["review_flank_bp"]
+    method = require_v2_run(STEP2, cfg)["method_version"]
+    previous = json.loads((STEP2B / "summary.json").read_text())
+    if previous.get("method_version") != method or previous.get("review_flank_bp") != FLANK_BP:
+        raise ValueError("Step 2B must be rerun with the same v2 config")
+    if (previous.get("step2_manifest_sha256") != sha256(STEP2 / "run_manifest.json")
+            or previous.get("candidate_evidence_sha256") != sha256(STEP2B / "candidate_evidence.tsv")):
+        raise ValueError("Step 2B provenance does not match current inputs")
 
     OUT.mkdir(parents=True, exist_ok=True)
     env_bin = PROJECT / "envs" / "identify" / "bin"
@@ -219,7 +235,7 @@ def main(argv: list[str]) -> int:
             })
         with (OUT / "physical_loci.tsv").open("w", newline="") as fh:
             w = csv.DictWriter(fh,
-                               fieldnames=list(rows[0].keys()),
+                               fieldnames=list(rows[0].keys()) if rows else ["physical_locus_id", "genome_id", "contig_uid", "span_start0", "span_end0", "strand_hypotheses", "n_original_loci", "original_locus_ids"],
                                delimiter="\t", lineterminator="\n")
             w.writeheader()
             for r in rows:
@@ -234,6 +250,8 @@ def main(argv: list[str]) -> int:
                     contig_uid=row["contig_uid"],
                     span_start0=int(row["span_start0"]),
                     span_end0=int(row["span_end0"]),
+                    strand_hypotheses=set(filter(None, row["strand_hypotheses"].split("|"))),
+                    original_locus_ids=list(filter(None, row["original_locus_ids"].split(","))),
                 )
                 phys.append(L)
 
@@ -266,7 +284,7 @@ def main(argv: list[str]) -> int:
             })
         with (OUT / "physical_candidate_evidence.tsv").open("w", newline="") as fh:
             w = csv.DictWriter(fh,
-                               fieldnames=list(rows[0].keys()),
+                               fieldnames=list(rows[0].keys()) if rows else ["physical_locus_id", "genome_id", "contig_uid", "span_start0", "span_end0", "structural_class", "flank_left_bp", "flank_right_bp", "contig_length", "genome_uid"],
                                delimiter="\t", lineterminator="\n")
             w.writeheader()
             for r in rows:
@@ -279,6 +297,10 @@ def main(argv: list[str]) -> int:
     # to keep this file readable. For now, write a status so a shell can
     # chain the next step.
     (OUT / "step2c_status.json").write_text(json.dumps({
+        "method_version": method,
+        "step2_manifest_sha256": sha256(STEP2 / "run_manifest.json"),
+        "outputs_sha256": {name: sha256(OUT / name) for name in ("physical_loci.tsv", "physical_candidate_evidence.tsv") if (OUT / name).is_file()},
+        "review_flank_bp": FLANK_BP,
         "phases_completed": args.phases,
         "n_physical_loci": len(phys),
         "n_proteomes": len(gid_to_faa) if gid_to_faa else -1,

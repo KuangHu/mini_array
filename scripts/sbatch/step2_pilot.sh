@@ -25,9 +25,11 @@ set -euo pipefail
 P="${PROJECT_ROOT:-/groups/rubin/projects/kuang/out/CRISPR_array_related}"
 CONFIG="${CONFIG:-/home/kuangh/tools/CRISPR_array_related/config/step2.yaml}"
 
-mkdir -p "$P/results/step2_pilot" "$P/logs"
+mkdir -p "$P/logs"
+EXTRA=()
+if [[ -n "${HITS_DIR:-}" ]]; then EXTRA+=(--hits-dir "$HITS_DIR"); fi
 
 conda run --no-capture-output -p "$P/envs/driver" \
   python /home/kuangh/tools/CRISPR_array_related/scripts/step2.py \
-  run --config "$CONFIG" \
+  run --config "$CONFIG" "${EXTRA[@]}" \
   > "$P/logs/step2_pilot.$SLURM_JOB_ID.log" 2>&1

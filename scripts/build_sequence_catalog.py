@@ -472,6 +472,8 @@ def write_readme(counts: dict, validation: dict, fingerprints: dict) -> None:
 # ----------------- main -----------------
 
 def main() -> int:
+    from _legacy_catalog import require_legacy_export
+    require_legacy_export()
     require_slurm()
     t0 = time.time()
     OUT.mkdir(parents=True, exist_ok=True)

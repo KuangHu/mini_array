@@ -12,9 +12,8 @@ Classes (user requested):
   - repeat_like_ambiguous        — detectable repeat similarity but no second
                                      unit visible in flank; or inside a soft
                                      Possible call
-  - edge_unresolved              — not enough flank to tell (either side
-                                     short of flank_bp) and no identify
-                                     context
+  - edge_excluded                — either flank short of flank_bp;
+                                     takes precedence over every other class
 """
 from __future__ import annotations
 
@@ -26,12 +25,16 @@ def classify(candidate_start0: int, candidate_end0: int,
              left_flank_bp: int, right_flank_bp: int,
              flank_bp: int, terminal_bp: int = 100) -> dict:
     reasons: list[str] = []
+    if left_flank_bp < flank_bp or right_flank_bp < flank_bp:
+        return {"structural_class": "edge_excluded",
+                "reasons": [f"flank_left={left_flank_bp} right={right_flank_bp} required={flank_bp}"],
+                "n_units_inside": 0, "n_units_in_flank": 0}
     arrays = overlay["nearby_identify_arrays"]
     cctyper = overlay["nearby_cctyper_crisprs"]
     units_inside = [u for u in overlay["nearby_identify_units"]
-                    if u["inside_candidate"]]
+                    if u["inside_candidate"] and u["unit_kind"] == "repeat"]
     units_in_flank = [u for u in overlay["nearby_identify_units"]
-                      if not u["inside_candidate"]]
+                      if not u["inside_candidate"] and u["unit_kind"] == "repeat"]
 
     cand_len = max(1, candidate_end0 - candidate_start0)
 
@@ -88,15 +91,6 @@ def classify(candidate_start0: int, candidate_end0: int,
                         f"units_in_window="
                         f"{len(units_inside)+len(units_in_flank)}")
         return {"structural_class": "repeat_like_ambiguous",
-                "reasons": reasons,
-                "n_units_inside": len(units_inside),
-                "n_units_in_flank": len(units_in_flank)}
-
-    # Edge-unresolved: short flank on either side AND no array context.
-    if left_flank_bp < flank_bp or right_flank_bp < flank_bp:
-        reasons.append(f"flank_left={left_flank_bp} right={right_flank_bp} "
-                        f"required={flank_bp}")
-        return {"structural_class": "edge_unresolved",
                 "reasons": reasons,
                 "n_units_inside": len(units_inside),
                 "n_units_in_flank": len(units_in_flank)}

@@ -13,7 +13,8 @@ import csv
 from collections import Counter
 from pathlib import Path
 
-import edlib
+from step1_lib.families import _edit_distance
+from step2_lib.pair import normalized_record
 
 
 COMPLEMENT = str.maketrans("ACGTacgt", "TGCAtgca")
@@ -61,8 +62,8 @@ def audit_shuffle(real_fa: Path, bg_fa: Path) -> list[dict]:
             continue
         mono_ok = mono_counts(rs) == mono_counts(bs)
         dinuc_ok = dinuc_counts(rs) == dinuc_counts(bs)
-        d_fwd = edlib.align(rs, bs, task="distance", mode="NW")["editDistance"]
-        d_rc = edlib.align(rs, revcomp(bs), task="distance", mode="NW")["editDistance"]
+        d_fwd = _edit_distance(rs, bs)
+        d_rc = _edit_distance(rs, revcomp(bs))
         min_edit = min(d_fwd, d_rc)
         sim = 1 - min_edit / max(len(rs), len(bs))
         rows.append({
@@ -90,6 +91,9 @@ def rebucket_pairs(pairs_tsv: Path,
     pair_rows = []
     with pairs_tsv.open() as fh:
         for r in csv.DictReader(fh, delimiter="\t"):
+            nr = normalized_record(r)
+            if nr["edge_excluded"]:
+                raise ValueError("Edge pair in accepted background table")
             try:
                 r["anchor_start0"] = int(r["anchor_start0"])
                 r["second_end0"] = int(r["second_end0"])
@@ -103,8 +107,8 @@ def rebucket_pairs(pairs_tsv: Path,
                                      int(r["second_end0"])))
             buckets[bucket] += 1
             key = (r["contig"], r["strand"],
-                   int(r["anchor_start0"]) // 60,     # cheap dedup proxy
-                   int(r["second_end0"]) // 60)
+                   nr["repeat_1_start0"] // 60,     # cheap dedup proxy, not physical loci
+                   nr["repeat_2_end0"] // 60)
             uniq_loci[key] = bucket
     uniq_counts = Counter(uniq_loci.values())
     return {

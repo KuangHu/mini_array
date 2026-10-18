@@ -31,8 +31,8 @@ from step2c_lib import homolog_search  # noqa: E402
 from step2c_lib import proteins as prot_mod  # noqa: E402
 
 PROJECT = Path("/groups/rubin/projects/kuang/out/CRISPR_array_related")
-OUT = PROJECT / "results" / "step2c_pilot"
-STEP2 = PROJECT / "results" / "step2_pilot"
+OUT = PROJECT / "results" / "step2c_v2"
+STEP2 = PROJECT / "results" / "step2_v2"
 
 NEIGHBORHOOD_BP = 10000
 MIN_PIDENT_FAM = 0.30
@@ -328,18 +328,29 @@ def phase_rna_protein_associations(phys_rows: list[dict],
 
 
 def main(argv: list[str]) -> int:
+    global PROJECT, OUT, STEP2
     require_slurm()
     p = argparse.ArgumentParser(prog="step2c_analyze.py")
+    p.add_argument("--config", type=Path, default=HERE.parent / "config/step2.yaml")
     p.add_argument("--phases", nargs="+",
                    default=["cds", "families", "homologs", "associations"],
                    help="which phases to run")
     args = p.parse_args(argv)
+    from step2 import load_cfg, require_v2_run, sha256
+    cfg = load_cfg(args.config)
+    PROJECT = cfg["project_root"]
+    OUT, STEP2 = PROJECT / cfg["review_c_dir"], PROJECT / cfg["output_dir"]
+    method = require_v2_run(STEP2)["method_version"]
+    status = json.loads((OUT / "step2c_status.json").read_text())
+    if status.get("method_version") != method or status.get("step2_manifest_sha256") != sha256(STEP2 / "run_manifest.json"):
+        raise ValueError("Rerun v2 structural review before protein analysis")
 
     OUT.mkdir(parents=True, exist_ok=True)
     threads = int(os.environ.get("SLURM_CPUS_PER_TASK", "4"))
 
     phys_rows = list(csv.DictReader(
         (OUT / "physical_candidate_evidence.tsv").open(), delimiter="\t"))
+    phys_rows = [r for r in phys_rows if r["structural_class"] != "edge_excluded"]
     _log(f"[load] physical loci (post-review) = {len(phys_rows)}")
 
     if "cds" in args.phases:

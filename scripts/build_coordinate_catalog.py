@@ -356,6 +356,8 @@ def _write_tsv(path: Path, rows: list[dict], cols: list[str]) -> None:
 # ---------------- main ----------------
 
 def main() -> int:
+    from _legacy_catalog import require_legacy_export
+    require_legacy_export()
     require_slurm()
     OUT.mkdir(parents=True, exist_ok=True)
 

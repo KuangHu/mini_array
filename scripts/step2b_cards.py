@@ -9,10 +9,18 @@ from collections import defaultdict
 from pathlib import Path
 
 PROJECT = Path("/groups/rubin/projects/kuang/out/CRISPR_array_related")
-STEP2B = PROJECT / "results" / "step2b_pilot"
+STEP2B = PROJECT / "results" / "step2b_v2"
 
 
 def main() -> int:
+    global PROJECT, STEP2B
+    import argparse
+    from step2 import load_cfg, require_v2_run
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--config", type=Path, default=Path(__file__).resolve().parents[1] / "config/step2.yaml")
+    cfg = load_cfg(ap.parse_args().config)
+    PROJECT, STEP2B = cfg["project_root"], cfg["project_root"] / cfg["review_b_dir"]
+    require_v2_run(PROJECT / cfg["output_dir"])
     import sys as _s
     _s.path.insert(0, "/home/kuangh/tools/CRISPR_array_related/scripts")
     from _slurm_gate import require_slurm
@@ -25,11 +33,10 @@ def main() -> int:
     # Map locus → module via the hmm_signature field
     sig_to_module = {m["hmm_signature"]: m["module_id"] for m in modules}
 
-    survived = [r for r in evidence if r["structural_class"] != "ordinary_array_fragment"]
+    survived = [r for r in evidence if r["structural_class"] not in ("ordinary_array_fragment", "edge_excluded")]
     survived.sort(key=lambda r: (
-        r["structural_class"] == "edge_unresolved",       # push edge last
         0 if r["strict_support"] == "true" else 1,         # strict first
-        -int(r["n_orfs_with_hmm"]) if r["n_orfs_with_hmm"] else 0,
+        -int(r["n_orfs_with_hmm"] or 0),
         r["genome_id"], r["locus_id"],
     ))
 

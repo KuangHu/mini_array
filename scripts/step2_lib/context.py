@@ -85,7 +85,12 @@ def classify_locus(contig: str, start0: int, end0: int,
                    soft: dict[str, list[tuple[int, int]]],
                    contig_lengths: dict[str, int],
                    edge_bp: int = 100) -> str:
-    pair_len = max(1, end0 - start0)
+    length = contig_lengths.get(contig)
+    if length is None or not 0 <= start0 < end0 <= length:
+        raise ValueError(f"Missing contig length or invalid locus: {contig}:{start0}-{end0}")
+    if start0 < edge_bp or length - end0 < edge_bp:
+        return "contig_edge"
+    pair_len = end0 - start0
     best_overlap_hard = 0
     for h0, h1 in hard.get(contig, []):
         ov = max(0, min(end0, h1) - max(start0, h0))
@@ -101,8 +106,4 @@ def classify_locus(contig: str, start0: int, end0: int,
     for h0, h1 in soft.get(contig, []):
         if max(0, min(end0, h1) - max(start0, h0)) > 0:
             return "possible_soft_context"
-    # contig edge
-    L = contig_lengths.get(contig)
-    if L is not None and (start0 < edge_bp or end0 > L - edge_bp):
-        return "contig_edge"
     return "standalone"

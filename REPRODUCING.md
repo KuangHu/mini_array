@@ -1,5 +1,11 @@
 # Reproducing the catalog
 
+For the corrected Step 2 v2 pipeline, use [V2_RERUN.md](V2_RERUN.md).
+The procedure below describes the historical release at commit
+`0a6b5919e7488463c749cf8ccfceb44a0cc1b899`; check out that commit to reproduce
+the published v1 deliverables. Current legacy exporters require explicit
+`--legacy` and do not produce v2 results. Do not mix v1 pair tables with v2 code.
+
 This repository ships the frozen coordinate + sequence catalog and the
 code that produced it. The underlying raw outputs (staged FASTAs, conda
 envs, software clones, cctyper per-genome output, patched identify

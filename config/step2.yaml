@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 
 # Frozen Step-1 inputs we are allowed to use (per 2026-10-16 approval):
 # - 1000 completed genomes under batch-1000 pilot
@@ -13,7 +13,17 @@ staged_dir: input/staged
 known_array_bed: results/step1_patched_min_score_0.75/known_array_regions.bed
 arrays_all_tsv: results/step1_patched_min_score_0.75/arrays.all.tsv
 
-output_dir: results/step2_pilot
+output_dir: results/step2_v2
+review_b_dir: results/step2b_v2
+review_c_dir: results/step2c_v2
+catalog_dir: results/candidate_catalog_v2
+
+# Edge records are audit-only, regardless of known-array context.
+# Step 2 excludes pairs within 100 bp of an end; structural review requires
+# the full 2 kb flank on both sides before a locus may enter the final catalog.
+edge:
+  min_flank_bp: 100
+  review_flank_bp: 2000
 
 # -------- Anchor + second-repeat search parameters --------
 # Full-length repeat anchor hit: ≥90% query coverage AND ≥90% identity.
@@ -35,10 +45,9 @@ spacer:
   min_len: 15
   max_len: 60
 
-# Overlap handling: if two anchor hits overlap on the same strand within
-# `overlap_merge_bp`, keep the one with higher bit-score. Dedup loci on
-# `locus_dedup_merge_bp` genomic distance.
-overlap_merge_bp: 10
+# Pair only hits to the SAME query, on either side of the full anchor.
+# Retain overlapping HSP alternatives until after pairing. Collapse only exact
+# footprints within a query/strand; dedup loci after preserving pair evidence.
 locus_dedup_merge_bp: 60
 
 # -------- BLAST tuning --------

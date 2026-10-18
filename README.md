@@ -1,5 +1,12 @@
 # CRISPR array / mini-array coordinate + sequence catalog
 
+**Current code: Step 2 v2. Published result files are historical v1 outputs,
+not rerun results.** V2 fixes mixed-query pairing, left/right anchor bias,
+gap-inflated coverage, and completeness/identity conflation. It exports
+mini-array and half-repeat evidence separately and excludes contig-edge
+loci from accepted candidates. See [V2 rerun and output definitions](V2_RERUN.md).
+The historical 40 candidates / 15,472 pairs must not be quoted as v2 counts.
+
 Reproducible catalog of CRISPR arrays and mini-array candidates recovered
 from the first 1000 bacterial representative genomes of GTDB r220, using
 a patched CRISPRidentify fork and CRISPRCasTyper. This repository holds
@@ -26,8 +33,8 @@ scripts/                 Pipeline code (step1.py, step2.py, step2b*, step2c*,
                          build_coordinate_catalog.py, build_sequence_catalog.py,
                          export_pairs.py, …) + sbatch wrappers
 config/step1.yaml        Frozen Step 1 configuration
-config/step2.yaml        Frozen Step 2 configuration
-tests/                   Unit + regression tests (46 passing)
+config/step2.yaml        Step 2 v2 configuration (historical inputs, corrected semantics)
+tests/                   Unit + regression tests, including synthetic v2 end-to-end replay
 step1.md                 Original Step 1 design spec (Chinese)
 
 provenance/              Pinned software + resource fingerprints
@@ -58,7 +65,8 @@ results/
 
 ## Reproducing
 
-See `REPRODUCING.md`. All compute runs under SLURM via `scripts/sbatch/`
+See `REPRODUCING.md` for historical inputs and `V2_RERUN.md` for current Step 2.
+All compute runs under SLURM via `scripts/sbatch/`
 wrappers; a `SLURM_JOB_ID` gate in every analysis entry point refuses
 login-node execution.
 
@@ -74,8 +82,8 @@ login-node execution.
   BLAST artefact, not a biological orientation.
 - Pair-level correspondence preserved in `mini_array_units.*`; identical
   component sequences are NOT deduplicated.
-- Thresholds (identify `min_score`, Step 2 anchor/secondary cutoffs,
-  spacer window, flank requirement) are the frozen L2-finalised values.
+- Numerical identity/coverage cutoffs and spacer window are retained in v2;
+  their implementation and edge precedence are corrected as documented.
 - No new biology, no CDS/protein/HMM, no RNA-protein association.
 - `allow_full_run: false`.
 
@@ -84,6 +92,9 @@ login-node execution.
 MIT — see `LICENSE`.
 
 ## Caveats
+
+The count and completeness-label statements below describe the frozen v1
+catalog only. V2 classifications and files are defined in `V2_RERUN.md`.
 
 - Query library is small (213 NR100 HQ repeats) — repeat families not
   represented in these 213 queries are invisible to Step 2.

@@ -103,7 +103,7 @@ def test_context_bucket_known_interior_vs_terminal(tmp_path: Path):
     # pair far away
     assert context_mod.classify_locus("ctg", 500, 580, hard, soft, lengths) == "standalone"
     # pair at contig edge
-    assert context_mod.classify_locus("ctg", 5, 95, hard, soft, lengths) == "suspected_terminal_extension"
+    assert context_mod.classify_locus("ctg", 5, 95, hard, soft, lengths) == "contig_edge"
     assert context_mod.classify_locus("ctg", 920, 999, hard, soft, lengths) == "contig_edge"
 
 

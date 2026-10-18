@@ -33,9 +33,16 @@ from . import parse as parse_mod
 def _edit_distance(a: str, b: str) -> int:
     if edlib is not None:
         return edlib.align(a, b, task="distance", mode="NW")["editDistance"]
-    # fallback — only used if edlib isn't available
-    from difflib import SequenceMatcher
-    return int(max(len(a), len(b)) * (1 - SequenceMatcher(None, a, b).ratio()))
+    # Exact Levenshtein fallback; SequenceMatcher is not an edit distance and
+    # can split near-identical repetitive sequences into different families.
+    previous = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        current = [i]
+        for j, cb in enumerate(b, 1):
+            current.append(min(current[-1] + 1, previous[j] + 1,
+                               previous[j - 1] + (ca != cb)))
+        previous = current
+    return previous[-1]
 
 
 def _distance(a: str, b: str) -> int:

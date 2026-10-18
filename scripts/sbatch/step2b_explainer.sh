@@ -10,7 +10,7 @@
 set -euo pipefail
 P="${PROJECT_ROOT:-/groups/rubin/projects/kuang/out/CRISPR_array_related}"
 CONFIG="${CONFIG:-/home/kuangh/tools/CRISPR_array_related/config/step2.yaml}"
-mkdir -p "$P/results/step2b_pilot" "$P/logs"
+mkdir -p "$P/logs"
 conda run --no-capture-output -p "$P/envs/driver" \
   python /home/kuangh/tools/CRISPR_array_related/scripts/step2b.py \
   --config "$CONFIG" \

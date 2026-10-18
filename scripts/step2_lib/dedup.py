@@ -55,6 +55,11 @@ def dedup(pairs: list[RepeatPair], merge_bp: int) -> list[Locus]:
                 "anchor_pident": p.anchor_pident,
                 "second_pident": p.second_pident,
                 "spacer_len": p.spacer_len,
+                "pair_kind": p.pair_kind,
+                "anchor_start0": p.anchor_start0,
+                "anchor_end0": p.anchor_end0,
+                "second_start0": p.second_start0,
+                "second_end0": p.second_end0,
             })
     return loci
 
@@ -67,7 +72,7 @@ def write_loci_tsv(loci: list[Locus], out: Path, strict_queries: set[str]) -> No
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", newline="") as fh:
         w = csv.writer(fh, delimiter="\t", lineterminator="\n")
-        w.writerow(LOCUS_COLS + ["strict_support", "context"])
+        w.writerow(LOCUS_COLS + ["strict_support", "context", "pair_kinds", "n_mini_array_pairs", "n_half_repeat_pairs"])
         for idx, L in enumerate(sorted(loci, key=lambda x: (x.contig, x.start0, x.strand))):
             lid = f"loc_{idx+1:06d}"
             strict = any(q in strict_queries for q in L.queries)
@@ -77,12 +82,15 @@ def write_loci_tsv(loci: list[Locus], out: Path, strict_queries: set[str]) -> No
                 ",".join(sorted(L.queries)),
                 "true" if strict else "false",
                 L.context,
+                ",".join(sorted({a["pair_kind"] for a in L.attributions})),
+                sum(a["pair_kind"] == "mini_array" for a in L.attributions),
+                sum(a["pair_kind"] == "half_repeat" for a in L.attributions),
             ])
 
 
 ATTR_COLS = ["locus_id", "contig", "strand", "anchor_qseqid",
               "second_qseqid", "anchor_pident", "second_pident",
-              "spacer_len"]
+              "spacer_len", "pair_kind", "anchor_start0", "anchor_end0", "second_start0", "second_end0"]
 
 
 def write_locus_attributions(loci: list[Locus], out: Path) -> None:
@@ -98,4 +106,6 @@ def write_locus_attributions(loci: list[Locus], out: Path) -> None:
                     a["anchor_qseqid"], a["second_qseqid"],
                     a["anchor_pident"], a["second_pident"],
                     a["spacer_len"],
+                    a["pair_kind"], a["anchor_start0"], a["anchor_end0"],
+                    a["second_start0"], a["second_end0"],
                 ])

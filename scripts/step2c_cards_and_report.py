@@ -15,7 +15,7 @@ sys.path.insert(0, str(HERE))
 from _slurm_gate import require_slurm  # noqa: E402
 
 PROJECT = Path("/groups/rubin/projects/kuang/out/CRISPR_array_related")
-OUT = PROJECT / "results" / "step2c_pilot"
+OUT = PROJECT / "results" / "step2c_v2"
 
 
 def _read(path, delim="\t"):
@@ -61,7 +61,18 @@ def _annot_lookup() -> dict[str, list[dict]]:
 
 
 def main() -> int:
+    global PROJECT, OUT
     require_slurm()
+    import argparse
+    from step2 import load_cfg, require_v2_run, sha256
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--config", type=Path, default=HERE.parent / "config/step2.yaml")
+    cfg = load_cfg(ap.parse_args().config)
+    PROJECT, OUT = cfg["project_root"], cfg["project_root"] / cfg["review_c_dir"]
+    method = require_v2_run(PROJECT / cfg["output_dir"])["method_version"]
+    status = json.loads((OUT / "step2c_status.json").read_text())
+    if status.get("method_version") != method or status.get("step2_manifest_sha256") != sha256(PROJECT / cfg["output_dir"] / "run_manifest.json"):
+        raise ValueError("Rerun v2 structural review before reporting")
 
     phys = _read(OUT / "physical_candidate_evidence.tsv")
     cds_rows = _read(OUT / "candidate_all_cds.tsv") if \
@@ -92,7 +103,7 @@ def main() -> int:
         by_class[p["structural_class"]].append(p)
 
     # Count how many surviving loci have ≥1 CDS, HMM, Cas family, etc.
-    survived = [p for p in phys if p["structural_class"] != "ordinary_array_fragment"]
+    survived = [p for p in phys if p["structural_class"] not in ("ordinary_array_fragment", "edge_excluded")]
 
     # Build "recurrent" family list (family present in ≥2 genomes AND linked
     # to RNA anchor in at least one of them)
@@ -113,7 +124,7 @@ def main() -> int:
     cards.append(f"{len(phys)} physical loci total; "
                    f"{len(survived)} survived structural review.\n")
     cards.append("Ordering: candidate_mini_array first (strict→HMM→genome), "
-                   "then terminal_extension, then edge_unresolved.\n")
+                   "then terminal_extension and ambiguous; edges excluded.\n")
     cards.append("---\n")
 
     survived_sorted = sorted(
@@ -193,26 +204,25 @@ def main() -> int:
         report.append(f"| `{k}` | {n} |")
     report.append("")
     report.append("Changes vs Step 2B structural review:")
-    report.append("- `ordinary_array_fragment` now requires actual repeat/spacer "
+    report.append("- `ordinary_array_fragment` now requires actual repeat "
                    "unit evidence from identify's array_units.tsv or cctyper's "
                    "crisprs_all.tab (≥2 repeats). Overlapping a Possible/Low "
                    "score band without unit evidence is no longer sufficient.")
-    report.append("- `candidate_mini_array` dropped from 56 (Step 2B) to "
-                   f"{counts.get('candidate_mini_array', 0)} after the tighter "
-                   "rule exposed partial unit evidence in several candidates.")
+    report.append(f"- Reviewed `candidate_mini_array` physical loci: "
+                   f"{counts.get('candidate_mini_array', 0)}. Mini-array/half-repeat "
+                   "pair kinds are split in candidate_catalog_v2; this structural class alone does not distinguish them.")
     report.append(f"- New `repeat_like_ambiguous` class captures candidates with "
                    f"partial unit evidence: {counts.get('repeat_like_ambiguous', 0)}.")
-    report.append(f"- `edge_unresolved` kept separate: "
-                   f"{counts.get('edge_unresolved', 0)}.")
+    report.append(f"- `edge_excluded` audit records (excluded from candidates): "
+                   f"{counts.get('edge_excluded', 0)}.")
     report.append(f"- `terminal_extension`: {counts.get('terminal_extension', 0)}.")
     report.append("")
 
     report.append("## 3. ±10 kb CDS recovered via prodigal re-run\n")
-    report.append("Proteomes were recovered from scratch by re-running prodigal "
-                   "on the staged FASTA for every genome in the frozen 1000-"
-                   "genome batch. Mode matches the Step 1 cctyper mode "
-                   "(`isolate → single`, `MAG → meta`). The run was executed "
-                   "under envs/identify (prodigal 2.6.3).")
+    report.append("Protein analysis is optional. The tables below summarize "
+                   "available outputs; absent files do not establish biological absence. "
+                   "The optional proteome phase uses staged FASTAs with "
+                   "`isolate → single`, `MAG → meta` modes.")
     report.append(f"- Protein files written: {OUT}/proteins/<guid>.faa")
     report.append(f"- Candidate-neighborhood CDS: "
                    f"**{len(cds_rows)} rows** across "
@@ -323,9 +333,9 @@ def main() -> int:
     report.append("## 8. Honoured non-negotiables\n")
     report.append("- Physical dedup collapses only true same-interval"
                    "/strand pairs; truly nearby distinct loci stay separate.")
-    report.append("- `ordinary_array_fragment` requires actual repeat/spacer "
+    report.append("- `ordinary_array_fragment` requires actual repeat "
                    "unit evidence, not just overlap with a Possible region.")
-    report.append("- ALL CDS in ±10 kb were extracted (not just HMM-hit).")
+    report.append("- Optional CDS analysis extracts all CDS in ±10 kb, including no-HMM-hit proteins.")
     report.append("- Protein families are built from sequence similarity + "
                    "coverage, not HMM labels. Singletons kept, no_hit CDS NOT "
                    "collapsed into one bucket.")
@@ -341,7 +351,7 @@ def main() -> int:
 
     report.append("## 9. Deliverables\n")
     report.append("```")
-    report.append("results/step2c_pilot/")
+    report.append(str(OUT))
     report.append("  physical_loci.tsv                     Phase K1 dedup")
     report.append("  physical_candidate_evidence.tsv       Phase K2 structural review")
     report.append("  candidate_all_cds.tsv                 ±10 kb CDS per locus (all, not just HMM-hit)")
@@ -359,14 +369,13 @@ def main() -> int:
                    "HMM over the same proteins would widen the annotation "
                    "coverage; it is out of scope for this round because it "
                    "requires a new large HMM DB download.")
-    report.append(f"- {counts.get('edge_unresolved', 0)} candidates remain "
-                   "edge_unresolved — explicitly listed in the cards without "
-                   "being filled in with assumptions.")
+    report.append(f"- {counts.get('edge_excluded', 0)} edge records are audit-only; "
+                   "excluded from candidate cards and accepted counts.")
     report.append(f"- {counts.get('repeat_like_ambiguous', 0)} candidates fall "
                    "in `repeat_like_ambiguous` — partial unit evidence; "
                    "preserved without forcing a mini-array or ordinary call.")
 
-    (PROJECT / "results" / "REPORT_STEP2C.md").write_text("\n".join(report) + "\n")
+    (OUT / "REPORT_STEP2C.md").write_text("\n".join(report) + "\n")
     print(f"wrote candidate_cards.md ({len(survived_sorted)} entries) and REPORT_STEP2C.md")
     return 0
 

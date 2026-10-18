@@ -335,6 +335,8 @@ def write_summary(all_rows: list[dict], trusted: list[dict],
 # ----------------- main -----------------
 
 def main() -> int:
+    from _legacy_catalog import require_legacy_export
+    require_legacy_export()
     require_slurm()
 
     # 1. Rewrite crispr arrays with split validation + add trusted view.

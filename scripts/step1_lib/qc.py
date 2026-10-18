@@ -55,9 +55,9 @@ def _normalized_edit_similarity(a: str, b: str) -> float:
         return 0.0
     if edlib is not None:
         d = edlib.align(a, b, task="distance", mode="NW")["editDistance"]
-    else:  # pragma: no cover — fallback
-        import difflib
-        d = int(max(len(a), len(b)) * (1 - difflib.SequenceMatcher(None, a, b).ratio()))
+    else:
+        from .families import _edit_distance
+        d = _edit_distance(a, b)
     return 1 - d / max(len(a), len(b))
 
 

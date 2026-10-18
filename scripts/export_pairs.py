@@ -63,6 +63,8 @@ class _Cache:
 
 
 def main() -> int:
+    from _legacy_catalog import require_legacy_export
+    require_legacy_export()
     require_slurm()
     OUT.mkdir(parents=True, exist_ok=True)
     t0 = time.time()

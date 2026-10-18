@@ -38,10 +38,8 @@ NEIGHBORHOOD_BP = 10000
 
 
 def load_step2_config(path: Path) -> dict:
-    cfg = yaml.safe_load(path.read_text())
-    cfg["project_root"] = Path(cfg["project_root"]).resolve()
-    cfg["code_root"] = Path(cfg["code_root"]).resolve()
-    return cfg
+    from step2 import load_cfg
+    return load_cfg(path)
 
 
 def main(argv: list[str]) -> int:
@@ -51,11 +49,15 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--config", required=True, type=Path,
                     help="config/step2.yaml — reused for paths")
     args = ap.parse_args(argv)
+    global FLANK_BP
     cfg = load_step2_config(args.config)
+    FLANK_BP = cfg["edge"]["review_flank_bp"]
     p = cfg["project_root"]
 
     step2_dir = p / cfg["output_dir"]
-    out_dir = p / "results" / "step2b_pilot"
+    from step2 import require_v2_run, sha256
+    run_info = require_v2_run(step2_dir, cfg)
+    out_dir = p / cfg["review_b_dir"]
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print("[load] contig map, identify + cctyper layers…")
@@ -75,8 +77,7 @@ def main(argv: list[str]) -> int:
     loci = []
     with (step2_dir / "loci.tsv").open() as fh:
         for r in csv.DictReader(fh, delimiter="\t"):
-            if r["context"] not in ("standalone", "possible_soft_context",
-                                     "contig_edge"):
+            if r["context"] not in ("standalone", "possible_soft_context"):
                 continue
             loci.append(r)
     print(f"[load] candidate loci: {len(loci)}")
@@ -91,7 +92,7 @@ def main(argv: list[str]) -> int:
     for L in loci:
         cuid = L["contig"]
         if cuid not in contigs:
-            continue
+            raise ValueError(f"Missing contig metadata: {cuid}")
         meta = contigs[cuid]
         guid = meta["genome_uid"]
         gid = meta["genome_id"]
@@ -100,7 +101,7 @@ def main(argv: list[str]) -> int:
         try:
             seq = staged_cache.get_contig_seq(guid, cuid)
         except KeyError:
-            continue
+            raise ValueError(f"Missing staged sequence: {cuid}")
         window = flanks.extract_with_flanks(seq, start0, end0, FLANK_BP)
         if guid not in orf_cache:
             orf_cache[guid] = overlay.load_cctyper_genes(guid, p / "raw" / "cctyper")
@@ -119,7 +120,7 @@ def main(argv: list[str]) -> int:
                                 flank_bp=FLANK_BP)
 
         # Neighborhood (±10kb) for candidates that are NOT ordinary_array_fragment
-        if cl["structural_class"] != "ordinary_array_fragment":
+        if cl["structural_class"] not in ("ordinary_array_fragment", "edge_excluded"):
             all_orfs = orf_cache[guid].get(cuid, [])
             hmm_by_pos = defaultdict(list)
             for h in hmm_cache[guid].get(cuid, []):
@@ -170,6 +171,7 @@ def main(argv: list[str]) -> int:
             "n_pairs": L["n_pairs"],
             "n_unique_queries": L["n_unique_queries"],
             "query_set": L["query_set"],
+            "pair_kinds": L["pair_kinds"],
             "strict_support": L["strict_support"],
             "step2_context": L["context"],
             "structural_class": cl["structural_class"],
@@ -191,7 +193,7 @@ def main(argv: list[str]) -> int:
     print(f"[explain] evaluated {len(rows)} candidates")
 
     # Write candidate_evidence.tsv
-    cols = list(rows[0].keys()) if rows else []
+    cols = list(rows[0].keys()) if rows else ["locus_id", "genome_id", "contig_uid", "candidate_start0", "candidate_end0", "strand", "structural_class", "pair_kinds"]
     with (out_dir / "candidate_evidence.tsv").open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=cols, delimiter="\t",
                             lineterminator="\n")
@@ -204,7 +206,7 @@ def main(argv: list[str]) -> int:
         w = csv.writer(fh, delimiter="\t", lineterminator="\n")
         w.writerow(["locus_id", "hmm_family", "n_orfs_with_this_hmm"])
         for r in rows:
-            if r["structural_class"] == "ordinary_array_fragment":
+            if r["structural_class"] in ("ordinary_array_fragment", "edge_excluded"):
                 continue
             counts = Counter(r["hmm_families_in_window"].split(","))
             for fam, n in counts.items():
@@ -213,7 +215,7 @@ def main(argv: list[str]) -> int:
 
     # Module families
     mods = modules.group_by_signature(
-        [r for r in rows if r["structural_class"] != "ordinary_array_fragment"]
+        [r for r in rows if r["structural_class"] not in ("ordinary_array_fragment", "edge_excluded")]
     )
     modules.write_modules_tsv(mods, out_dir / "candidate_module_families.tsv")
 
@@ -231,7 +233,8 @@ def main(argv: list[str]) -> int:
     contig_lengths = {k: v["length"] for k, v in contigs.items()}
 
     def _ctx(contig, s0, e0):
-        return context_mod.classify_locus(contig, s0, e0, hard, soft, contig_lengths)
+        return context_mod.classify_locus(contig, s0, e0, hard, soft, contig_lengths,
+                                          cfg["edge"]["min_flank_bp"])
 
     bg_bucket = {}
     for name in ("real", "bg_rep0", "bg_rep1", "bg_rep2"):
@@ -313,6 +316,10 @@ def main(argv: list[str]) -> int:
 
     # Summary
     summary = {
+        "method_version": run_info["method_version"],
+        "step2_manifest_sha256": sha256(step2_dir / "run_manifest.json"),
+        "candidate_evidence_sha256": sha256(out_dir / "candidate_evidence.tsv"),
+        "review_flank_bp": FLANK_BP,
         "n_candidates_evaluated": len(rows),
         "structural_class_counts": dict(Counter(r["structural_class"] for r in rows)),
         "step2_context_counts": dict(Counter(r["step2_context"] for r in rows)),

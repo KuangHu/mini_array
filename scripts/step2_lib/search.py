@@ -86,8 +86,8 @@ def read_hits(tsv: Path) -> list[HitRow]:
             if not raw.strip() or raw.startswith("#"):
                 continue
             parts = raw.rstrip("\n").split("\t")
-            if len(parts) < len(BLAST_COLUMNS):
-                continue
+            if len(parts) != len(BLAST_COLUMNS):
+                raise ValueError(f"Expected {len(BLAST_COLUMNS)} BLAST columns in {tsv}, got {len(parts)}")
             rows.append(HitRow(
                 qseqid=parts[0],
                 sseqid=parts[1],
@@ -118,7 +118,11 @@ def hit_start0_end0(h: HitRow) -> tuple[int, int]:
 
 
 def hit_query_coverage(h: HitRow) -> float:
-    return h.length / h.qlen if h.qlen else 0.0
+    """Fraction of query coordinates covered by this HSP, excluding gap columns."""
+    lo, hi = sorted((h.qstart, h.qend))
+    if h.qlen <= 0 or lo < 1 or hi > h.qlen:
+        raise ValueError(f"Invalid query coordinates for {h.qseqid}: {lo}-{hi}/{h.qlen}")
+    return (hi - lo + 1) / h.qlen
 
 
 def hit_passes(h: HitRow, min_identity: float, min_cov: float) -> bool:
